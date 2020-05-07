@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KeyMemo.next</title>
+    <link rel="stylesheet" type="text/css" href="styles/style.css">
+    <link rel="stylesheet" type="text/css" href="styles/style-spinner.css">
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="icon" sizes="192x192" href="images/icons/icon-192x192.png">
+    <link rel="manifest" href="/manifest.json">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="msapplication-TileImage" content="images/icons/icon-144x144.png">
+    <meta name="msapplication-TileColor" content="#2F3BA2">
+    <meta name="application-name" content="KeyMemo.next">
+    <meta name="theme-color" content="#2F3BA2">
+</head>
+
+<body class="center_align" onclick="timer_autosave_in.reset();">
+
+    <!--    используется для сохранения временных результатов-->
+    <div id='temp_div_list_secrets_from_localStorage' hidden="">
+    </div>
+    <div id='temp_div_list_secrets_from_file' hidden="">
+    </div>
+
+    <!--загловок-->
+    <div id='div_autosave_in' class="text_controls_element">
+        <!--Состояние-->
+        <div id="above_the_title_top_right">
+            <div id="online_offline" title=""> offline </div>
+        </div>
+
+        <!--Таймер обратного отсчета-->
+        <div id="timer_div" class="timer_1min_div element_hidden">Autosave through:
+            <span id="pie" class="timer_1min"></span>
+            <span id='autosave_in'>00</span> min.
+
+        </div>
+    </div>
+
+    <div id="page">
+        <!-- Невидимый элемент, фактически браузер прокручивает его. -->
+        <div id="wscroll"></div>
+        <!--форма генерации пароля-->
+        <div id="div_password_generate" class="form_hidden ">
+            <div id="div_password_generate_inner" class="div_full_screen_inner" onclick="div_hide_id('div_password_generate');">
+            </div>
+            <div id="floater-inner">
+                <div id="form_field_type">
+                    <div id="gen_pass_container_div">
+                        <form name="form_password_generate" id="gen_pass_container" autocomplete="off">
+                            <div id="pass_check_div">
+                                <div id="password_lenght_title">
+                                    Lenght password:
+                                </div>
+                                <div id="pass_check_input">
+                                    <input id="password_lenght" class="field_input" maxlength="2" value="14">
+                                </div>
+                            </div>
+
+                            <div class="pass_check_symbol_in_password">
+                                <div class="pass_check_symbol_in_password_ckeckbox">
+                                    <input id="pass_ABC" class="cmn-toggle cmn-toggle-yes-no" type="checkbox" checked="checked">
+                                    <label class="pass_label" for="pass_ABC" data-on="ABC" data-off="ABC"></label>
+
+                                </div>
+                                <div class="pass_check_symbol_in_password_ckeckbox">
+                                    <input id="pass_abc" class="cmn-toggle cmn-toggle-yes-no" type="checkbox" checked="checked">
+                                    <label class="pass_label" for="pass_abc" data-on="abc" data-off="abc"></label>
+
+                                </div>
+                                <div class="pass_check_symbol_in_password_ckeckbox">
+                                    <input id="pass_0_9" class="cmn-toggle cmn-toggle-yes-no" type="checkbox" checked="checked">
+                                    <label class="pass_label" for="pass_0_9" data-on="0..9" data-off="0..9"></label>
+                                </div>
+                                <div class="pass_check_symbol_in_password_ckeckbox">
+                                    <input id="pass_spec" class="cmn-toggle cmn-toggle-yes-no" type="checkbox">
+                                    <label class="pass_label" for="pass_spec" data-on="!$^." data-off="!$^."></label>
+                                </div>
+                            </div>
+
+                            <div class="pass_check_symbol_in_password">
+                                <div>
+                                    <div class="pass_check_symbol_in_password_ckeckbox">
+                                        <a id="pass_generate_a" class="button_active">Generate</a>
+
+                                        <input type="text" id="Password_for_insert" class="field_input" maxlength="50">
+                                    </div>
+                                </div>
+                                <div class="pass_check_symbol_in_password_ckeckbox">
+                                    <a hpref="#password insert" id="pass_insert_a" class="button_active" onclick="insertPassword();">Insert</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <!--форма добавления поля в секрет-->
+        <div id="div_form_add_field" class="form_hidden center_align" hidden>
+            <div class="div_full_screen_inner" onclick="div_hide_id('div_form_add_field');">
+            </div>
+            <form name="add_field_form" id="form_add_field" class="add_field_form " autocomplete="off">
+
+                <div id="add_field_div">
+                    <label>
+                        <input type="checkbox" name="payment" value="field" checked="" id="can_be_deleted" tabindex="200">Can be deleted</label>
+                    <br>
+                    <div id="add_field_title" class="form_title">
+                        Field name:
+                        <input id="add_field_name" class="field_input " maxlength="16" type="text" tabindex="200">
+                    </div>
+
+                    <div>
+                        <label>
+                            <input type="radio" name="type_field" value="field" checked="" id="field" tabindex="200">Field</label>
+                        <label>
+                            <input type="radio" name="type_field" value="link" id="link" tabindex="200">Link</label>
+                        <label>
+                            <input type="radio" name="type_field" value="password" id="password" tabindex="200">Password</label>
+                        <label>
+                            <input type="radio" name="type_field" value="textarea" id="textarea" tabindex="200">Textarea</label>
+                    </div>
+                    <div>
+                        <a class="button_active" id="field_insert" tabindex="200">Add field</a>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+        <!--основная страница-->
+        <div id="page_container" class="page-container center_align">
+            <!--  заголовок-->
+            <div class="head_name">
+                <div class="col1" id="headerLink">
+                    <span>KeyMemo.<wbr>next</span>
+                </div>
+                <div class="col3">
+                    <button id="headerButton" class="Button">☓</button>
+                </div>
+                <div class="col2" id="header_input_div">
+                    <input class="header_input input_keyboardLayout" type="text" required id="header_input" autocomplete="new-password" name="fakenameremembered" />
+                    <label class="inbox_label" id="header_input_placeholder" for="header_input">Initialization</label>
+                    <div class="keyboardLayout" id="keyboardLayout" hidden=""></div>
+                </div>
+                <label class="welcome_phrase" id="welcome_phrase" hidden>KeyMemo.NEXT</label>
+            </div>
+
+            <!--            <div id='autorize_on_drive_google_com'>
+                <div hidden="">
+                    Autorize on drive.google.com:<span id="span-google-test"> </span>
+                </div>
+                <input type="file" id="filePicker" style="display: none">
+                <input type="button" id="uploadButton" style="display: none;" value="Upload" hidden="">
+            </div>-->
+
+            <!--список секретов и управляющих элементов-->
+            <div id='secrets_and_control_element'>
+                <div class="lastChange_secret_title">
+                    Last change:
+                    <div id='last_change_list_secrets'>undefined</div>
+                </div>
+            </div>
+
+            <div id="select_secrets_and_control_elements" hidden="">
+                <div id="secret_add">
+                    <a hpref="#add_new_secret" id="add_new_secret" class="button_active" onclick="app.edit_secret();">Add secret</a>
+                </div>
+                <!--  список секретов-->
+                <div id="view_secrets" class=" scrollbox  center_align">
+                </div>
+            </div>
+
+            <!--секреты-->
+            <div id="div_list_secrets" data-lastchange="1970-00-00_00:00:00(UTC)" hidden="">
+                <div data-lastchange="1970-00-00_00:00:00(UTC)">
+                    <div data-type="field" data-name="SecretName">U2FsdGVkX19SAp/mx7m4vzOTbqRNZIv80Qx6pNuR9Q+yHdr9YCJZo15e5xi7ov6HxHZVZO3dZTiALGcifqijGA==</div>
+                    <div data-brackets-id="15898" data-type="textarea" data-name="Что это?" data-removable="false" data-textareaheight="261px">U2FsdGVkX1+w6GHttkqyMO4qd9LEpGQtsgwhPPOiOB7m2helzc51STx0/4NaMPM5B6K0NYhBYjSdG7CMu1GzwvEBMNuYBFMBDZ0aOJ0eYj2fdNCWrA3M00gZz6H3uq5MFEdRnfMWvtTOTDucLcfEmDENSiEUcAy5p3M6bS+uPCMxguQpsMjveTIlfH87SJzIHl8+SejxirvhTGZI/VG6ysPzouRNsHWLvIpflr2PckEcyJr83xftNV3bRZYoAuAoteXn3QB2QLipM77XBpn8PBZG1N6i0+ttKfw3RVeJQVt2NHFcfFVXOxfm8Zjt/ImOq2b7m9Hp1os2nrb/kAfZS9sBJTd+AYcv5PdBNAN6Iah2iMPGl4mnsgjvoiio1KGEM5Qh+BGdfq00vHyJxwOEijNIaDuZZ3RADV4jqFKEOcSpIJ/BzhHSKGzEw8RZX52O7s96BZ40fIddCK1qzu81MkHHTiTHBtrK8jEcYWIk5R9q6yCIOOQ3wrNJAb0+aXDx55mXgAVvDGTDOrayLuYW2jZE9bdhUkdztUmptmgc2BSJpWU6SftXPuKk1oY5kD0DX8h8zBaj/uzbIPGBNRMQEm+hVkeHfL+VKaMgMMlcH84OmefeLgnoUIUwYPNbExeVu050vPcEbpyKtOI8uZq2A8a4MU9EKPG0Fb1TY44j554AGhe4qC04HOCk5OaRw+l5u7nH6AB+TaR0+Aq5td1Inf6OxT1CTnFLhvIA32niPobOXxwESaSOpxs2u3wgr5hFcW6+WExxhf6tjB8LmYIcYr/N8ftqdXZvVmsCz58yNyOdPISaDFkFOygtWEAgwcnc7V/qDnRWxlnitWpvDn+kmMyhUj9gsstzvYUPmrOO6PkM2EgGwESegdmATAPxwmlHoc4RFkHiSFEDIioJo1a3rZPOxyNhGY5JFNZ0SyVgSRm+TpZFVXH3DuKoEkvvKGeT/7B6jhD8CqbKrKw2vLKifVjyR7C2cjkgl1rvNDBV1LzsS6ZO9zsjDOsoAokyCkpTL2QlvTfsQWfBF+mSd9q4DUPW/HZD043VOXpL6i8yW/Fn+Pz9QL0Gu5MBn6cj7O6EQcpd21KJTj/nksJAzP7oOV0HbDgubc3PzPesIWXzUhtfBXDUAvMpSOj8sey2KxbhabUeFHQutaiIigce/QxLTLDp/e7G7IvdcBU/QQ7u7gY=</div>
+                    <div data-type="textarea" data-name="Возможности" data-removable="false">U2FsdGVkX18fq2fczF4txqN3x+xFevohE0uZDIiJpkNK4ETDWXF4GpbiYQSWV1ixkFvcRD6JPlNiwg1CuIsUdTZJUj58q4XgsyEx+smAwhAuRd+sv/TmQkqYoQQ/aQpL+Kb76pLJTVHukJky7Evf783r+3ZHMtltSPUMqUSPgf+5BTU3QOeq2XIWVtNvqSBSGQdtN0LezGM05X7gMdzAtRGgtc8D9OtojbLfJg2LX3X4aHlw+iqLocBbvFdXUaW+KqIkmQJYJlnuycC/OANV5+8CsYZgh69heKCUwTt7TUkowzHKvdjF11Hq2e4+ZtGsY0zn45iONyBF9IEshorVe/FiaiDiDINgl+9frGBib27s1eyuiX84KilNiNt7I0AFK6YQl+7nCOlChB9XkcM8/C3fCs6P0ZEg65V4MRwCAFs5zaprfd1TLf+EjzJf/UhQcnKNlXXMyQSwd3O2ehunFYrhQJR0vd/ARqnvM0bvj8Bk2vvTv1Tmqratb7rSOzYHdcqjKaTCU9lZ2Xke+X3/A4xM3D1hspzkVdyd9rO0G32eCzRX7a/0wPk4dFIhQfItDcmEMKnyi1H3wVWmt7BdoZzaNQzkIawgcPsnCi3YyydREPVTv56WJMnstaCFsDwWSOBrzlzPNiPx0fwCO0RB8xpn/584Y0tx8ulYmnrLP6j0DQUkI0R3xhh4QlFbYFMHgPD0LIIfMmJSUXaQPfdcOGB1Ny9NPj32ZIz5DHKkZ7oaKLdiPR11s6G0ZjgBd7PKQoshYIIdz+Isszb+jbvBzlXxIZ1eLRz5HVd4ExB1B2tJy39XpGV3/FjCZGtWfcEjnF2TKsBqXUmYw7e4B7Ehgoik+JDc+o3U6odyVFrBr2QRdKZZetpzz0QdUk8IYcpgxeRp2Ty/qotqpWPNENlqpdoGBwMuzpqcS4Lj24fzbIe7MkX4zmEtUcU1zuOTX7ZFzrJhnj5s8QfVU1Jeade0s6SctJwebNN232Hgqh55H/jF2ut7Zi7YPju4j6Nv1UrLAA+iGxqcOhAc/RrzW3c4nDzbM41JkPflJmRamFjCYc1gfoWL6Y4LgZl3ruzNKi+b2VWb+PaB80DDGp4Sz/l2CEezfuI+B/XOT5sgXr+VopiQnuZjxShLttaChziygMY9jQwfwbcCDmyjV/3rg/i8BXGU6/XRCVbWVSlpSKc7sfx0PCJ+2vxwik79HVNkzwD55LG+CFgescYX0mRmwGd7nl4ZYBlTaEoDGRiCwGKAF9yT4RL30NP+kg/vHDAeFqa6mWoOQisvAn1aDD9aDj/btvgXBcQwWK2Nqgu9PKIC7eyxuFq7L/8v4C1jJni0P8wVOYmnPg3/bAfuH6kwqUqrNGuLtpmSgDJF2zvUVI4uKHV3S3q05OtZLmr9xeSMZsdCp/AgmmTtiTnZ3neB62g4cBbwOTifrh+Oh3WB2/8ZzyMiAw4k8oaKU9LQd3T10YBxzIOsOeycJlh+VamFOxuCj6LmGBrAbZCAFcFOE3WXyAXfGdRC39zw1yWGjgTEeD5kELfEznDEN5RsfLvB9/ZGKqjQ4kUw9j1C9KLgDnur9MvYWnKpFh/MDg0wkBYhB8oxKFVc5FUptApkzK7c8LkcazgyH04LMn36Ia4I8WIX71aUqE3XuKBuTaObLs9b0heLIi4Inj3RAQk+4p6tlTkou5I5WTjLmd5z9iAQ/FWgxUejYKKTtw83TaAtItst6+QSy7iZUW3D38pu3rPSX+tgSIMIU2EjnBBgQ5Cg9Uxnb1itGcJYUnUocXczA41oPeL9PtAAMfCGZaH7U1FoBhxlH/xsw8ZgidEdumk25M3PjgX0lWHfaURz1CxROp0s+voqHyuPYTBVU0qUYayim5p3HQQwOmLERzdyRQ7G23AEGAqGCPpUxocahGKRsRzVrSA+YnOkqI7u3fidAwzZ+gkvhTpLR40NRmHquwBsie8WxeC8hOIevACOKyYX/slZPa9BF6nkU+8jHPg/e7vlWuOIBqFoRJTTx+rw3n2TB3ZbMWcYwHKNEzDXvvhuFy957iyb6gtbCk5ea6ABhi4At+ICdHuycunNjA/TB/OJLoxcPXDiQR1WvYGuV+OeTlBF0P5JGLvkevXJ+UlO/qsfD9c3KY7+WC3Xrl8h6GoNkKG+8XX/PGw058NQhvoQpIMCu3UI5VMU4KQEPHJPFYOG2GGjMEPIIUMRe3xEniHYZnJiVGXDZhKGoZISx9xRS9OPGaDWqvYe26K/D25nEKX+lmfuB13VIC9FBLHQHqMfOxrmPNhZ8/uNgti0ozmQ33jBt1LZfJVPZNs/Qe70pxQHiwD2oOJpokyV0KJFxgqKBSsU5DIplXbMcuul9bSHjFpxsDtVa+HmKWQX5iGH1/8IyItJigpP/qAbL2PPjBe8jfXHxNl8zZWzUDLJFiaHpd8v3sD93ZhFlTo3qGHQnJtCx52gj3B+BCuZEeZFxP3WenmDtivIomD0Axnv5nRrvHZLXlhjprWDaBY31lTel171pV0aWWwtXI+plXvJr3X6fAP0WJPEUGDD7QQfoar/1Va1ha/QEQ6pJLp6dbx8xRs8mTUjOpdj28jHuR5gn+naiMyZcmhrudpO8X+okIjW+XRaQU+SsW0gV2reEPDrGTgQBDXc1OnJ77dm+ckuu8zUtbcYzyUVKHJQAkR8Q7NJiWARmMDBSlapBXlkHTD4i3/MEyGPi4JhfflEm2J5SVCK9RfIZCr89lajtEFVTNwP6Vdw+Ve8ntOD8zueI3RGt2QdY0OYBZVd/vCKJqPVuamgi05chCsTAsbdCHHPzjIqTEVbbfEbJ34NSTNO50wtvl9jfj2NQ3QZ/XrwJZUQHR+vjijph18ygTPqhOfcRsTdHPSFmmoj/vZFxg2jjjR1P2+lipTQ7/K5sqmDI+xi5nYlBYU/StQY902+PQk+jwBINN2IndY6uQNKPzGbjqDSyle5eqr0mzeC9YCf5un+Kz2kzY64UocnrbZ4YJ8ZwuhBn+zqn05Q0E+bnwZoOYAcm1FUo45mIHP1nhRYj5Xf1GGkXjgX8c1g5e55iIw3OSDAnMILkRziDbq+zfn4doHGltd3VAtvlabPfsw8C4QWPzO+Zycq5Db69GJCJJv+hFhfkjG9IUOgJfZ1pE/ajJ4qBTAop3FRQhzJJDqCtIeptET1lqycof8=</div>
+
+
+                    <div data-type="textarea" data-name="Что такое и из чего состоит секрет?" data-removable="false">U2FsdGVkX18fblDc5W7PW/I61yK62LDy+jhGClzAm0i9l3nc+pO7lXHi4qta+LAy9xWz5Kc7R2twWUWZVS4p435mn/HB4b9J/uIv/eomUPvrW84dEIMCU3RY+WTJfi/YENNCi5b8ccnfLiC/D1OI662p1SNP5rIw1nr/UM/UQPBe0oHjkGEUycdQ1yg2Y5Qjim+VvZeu8cXAYRhg5uYdnQUdWly5nRvtYn4z3s3n0fiJGWDcatVGEjp8O2SNlWKxXw4a2Z99fKSp4v36voS0boz1Swt1MkIziYwiUr7VVCwboq/TQzZdX2RDCI76oYoJz1g5dqq25ejEBAur11PsGNnbP5kK29DfHF66sJa5NCMvx+6VOxhD3F3yBChJWgqwR23lgfrSsrrKuigMi+j0HZAnJS/4B+67oqhcwL9789MOwIGOuvRm6J19yTNqo05Z</div>
+
+                    <div data-type="textarea" data-name="Каким алгоритмом шифруется секрет?" data-removable="false">U2FsdGVkX19ONJ7ybvxaAXOOzJPf8yLl51F3E+AEUhIiJBTwIsDIH83OI1avVIy1E+KLXVFyzmBfVSJgsafnQzNBMmGrXn8GeT9Fg9TpO5WcmVFRxr0ZNmIIU7wLtrQNFwRsWm0hea8qPwN2vrIaC7XqUETv73VtBYScByi1yibKDg7tNh+v6qO7IwxPpaNJ2wsZot3e+GLKh69lLZPokDWYyIDjIWFxXigp78VlAiE=</div>
+                    фы
+
+                    <div data-type="textarea" data-name="Где хранятся секреты?" data-removable="false">U2FsdGVkX1+UrBslF5cy6g2pw8DxQOMLKUiuG+4SkdrLJUc0lggtDhol9PtL9PiCWXuiWEkx5otFubEbe5a10nzeDaITx/XuN6yVCpYxok1v1rsR2BHNzsRGmj3t2yLYo6V96H//84kKnj2SPBWv0DUMi7Mz2/iFfa/GrC4FGwX+BioF4g3OHAAxBzdu4qbyvGgGgPvaQ1+chLpjg52ZFa6ywQRntfyFxFKcC0666jNfE1AJK9Rrg4oSZTf5unyvj/j7SzVWdMmdGdC7YKQ2MS86YXVYKLDzmKPRj7x0CgMzj7F05zMXwYdcQ9RmCpJby5MwkQhXRBLv/SdLVpPaEs4icPGBjVwnMXLNjwFz8/Nkrds0+aV/2kZmt8cUAdvOGZvqPWSl4dWj8CjEfN9bHuTJJC+9BmcurzMf1Z8+iOLEMCyNlUUx9vYXfqvvMbR6f7+4Kx59TzMTm9W2sib270vcyAXZQNy/mRToy7taBuqNO+hoFUCPKB5tCvs9d8d3HPxiFCEJ6O9DnBZ5cjkWMvyVaIHMl/p9CH0eOnvrRgvYEE/vj36c4kbEFmNipi7qA+WemEL4KOY8jH1E7CVOl77nNF/+RKEMSpp5xz/W497as11ascJThxRMkG3T2yx+NwSxC/yaIjoOSCeZTHT13/IvPv4uVqsuzywd9xo11ExXgtXBl1f7DDQrkAQz253pcpPayIrd75GhxY7cGmznn6YrUEZgnqTZoQ+aPDGXh4jDMA2uJ7lEJmxcWuImQYzq8nO2x5mgi9kM6mMrz0nUFxJC1RLI5i/CSLbC6fwKm8ysk1Gc+Mg9r4Kk3+tU0icPWQoeCSVPEljay5n3AvXBJizHHK1UE0kA+VA4vlqqSHc5mVL+hYqdOfuQF9/7lx+tnjfO1MC56HxA3hyhDXKBhvPMvnqj+T9uTACUU0DpY15CGU55FRSuEDDPTDE4bcPasN9ZR8YuzoIQS2nF7NJ19YG4GKah1bCJ/JVHAzj3GKbBrbLJLYEsEAmBvxvOK6iomi1CJbWolZUqC/vUS2XJXWwx5QcItaodJLypU7U1b9LVIXvkg73upFmzCqi0IXTepMI/nLdLfEaWIFGAU3R0kDSNOu/luEChr3wtbC7+2nbWUw61CAdrqPYzKtVOMLqTauW+tp4Jf0IrZxieXK+esDLupIisBN/dOxIfEA7bOmy8bW3o2U/hipaBiWSZZSusKqxdkDIp6URCyteVyHweV5Bl025TrA2U/2fM1RMPK6g5JHg01mav8s8O1I3bEuX/7FxjfM9dw4dHMnkOP5R+r+wYl5z67yHgnmga1UhAfQLK4hxiuhJ7B4Vxf9wvMLRffdhnSq1vk6aC10E9ampsH5BJmn/BLUqTnJjJzw9nn01SnXRaicOe96zD4PCY6cHh4R2bzYiE4zPInk/HfPKXgSq9cbSXKkzbjGaBMrRO98nEPZbmR8NL1eJn4cJLBM2eFJRy1QPTt2RpSBI1NBFqfhpvkwqPqccijsKkGO1QXgCDxOmLqV5FtuQegRgR9sEMbOh0iB8nnw6d5gS0tJQXWgSczTT9JgSOHZ4zSq+4F9a9qCSdLGZ9nqIpP5SjGlOKN7lXsmy1tsX0ILLGn2keX/Oa2Xul/KEbXYqHs+ylx1lCANs9R4ZK88nmutMmt0YRKhs22jbjXU7aj9vWQa4leb/eVptpq4y5zy9ykP2FykY=</div>
+
+                    <div data-type="textarea" data-name="Как хранятся секреты в файле?" data-removable="false">U2FsdGVkX1+EM2WeeJsSQdlv1TJOtwCdLsT+nNGuilxWGpe1R64+fwaOyCgo5gqKIiKSWQ8gJeOvc1HZEagWWQEWZ+h7KLFCAKFO72thEEktLebffXjzvf/s0MbTxqPKNVsfMK05LIz1dgNZ3VFIHtStfA926JXZSaEcTaiO6rCJYEd2ev+peM14WdCFez/lH3yX4j1o4H2sFIX2aAS+SRrVkij2DB65C3qITbl9Jb9gU0NVJ5QjxLAoOZYWn0G0eEt8mBGT9BuIp27CwaWZ+yYv3LL1J92N3mKzR/X5JQXvTfxc2bOElvPErFEbLGAOX0a/YuPaC1CrBU3YlGx9nYS8m67C5zBBdKDEYEIHoLuSZxBJICnRUKSg9ehSqGppImOPuFoMpMgJzfi1BjQBBZJTsibvBt0FL0jNrPf25qjzZr4NK7GhYrIpVVePMb/Hz5cqhTm+EQi0uuiwl5VqnMrYkOGilyf8+VLEDBfAiO2eRJhNrgG4+0IsE+QADuAfK9aX4cUjYT/UpZkxbGsp+PrwNnfSYvMK5gPTdggIke8KGlulFu1kSAdt4CbaTfPJnVu5Jk/TBTtC4x5SAqfybURqMtr6bbiY3QDFe/g4+myd/Woa+w9LfKBiLyObecX+LTI6k8cb1BCC9Oq9S7tRbFT28Q7s35WcFPJWIoxv75x4cqbRr1w88dW5MUNkS5HgmAh+InVYVCMzrr/26hXMgSN8mp+v2//jD+wFRSIb7/UzUmCNjpudcsokMMqKpM9gmav7h/18Xy5+JSnz1QBh5i/xCk/XFntS4jdf0kESeLrtmTuY1tHiyX1VWOUyoT5GohAaL9hFn0WrPf6HwkWc2nI7cNu2nXORSOYoCTfEszaCw8f29R/FHZEkBZAe28q9x1uD2NSCLqYta6lrNTiN8EOowRX7zwPm5DSr3M9n6c7+MCJ+jjLx5rlESo7qdPQvZvsncPV4cTnfEHLx4Ji6MuOUEbOYuUsXbsoD0lhrCCtnG42xFC6+PK3QDBKNwzuWp8fkQehb5SbNL7UPyhlrcnD4g5FSltk2ZOTmopcwnEk=</div>
+
+                    <div data-type="textarea" data-name="Импорт из файла keymemo.com" data-removable="false">U2FsdGVkX19sjKD8BmIeLJ/4Q21KMWvKABaWHpILuM6FIZrI/RooZzESgQDf9iZ9sYKsbOjsGkjeZUaNsnnc+yrH3ohyfuoCnOWYhP0R2IktrK1cm+64CWCrN1Zgq+uKHv6xam/J+/bE80FT6XmGOEZCvK4o26Wkriy67eNuU8R+mmstLlzQkSuPoQC7gACxwX0rHWBYP5xQC9Y4hEtsZ55oAJQL8T6ZMJqd7FoOzfg4DoQ2pfYGRME6C5XRHLDM6RsR6AlrbBULiK+R0pYFjKOR7byw7kxzY59g7dqk53P/8OqbJRY1zVBSg3UTr7OzuvfZPVFxsVCNkix1E4FnWLWGWxQt6dhqmN/iqIZ6jZlj7i7QMJ+X4ek7JF6oR0F7srsTweNG237x4iG+lYqh8D+k0rTJ3q3/Yvou9MCLBQoNWfXNE6jYhi9cnhf+AhNSYZJpNi3cRthHI3d3f8qBHdR3Y/WR7CE2RGG/0QL2GwB+rBC8MHPhz4azVRYPaGX7SfYKp+ujf0fTqsy0Mr5NZBv0AfKSnres7V1xWQDWMDWc1kmJldFp+y3m6P3h3Fp7gb2YGgd46pWijZzzXYvJOoxTzt6N3M6sIL5k1lfxwovGPwDVBFAFMvQRbOhdHT6HW6Vkip4OU1nXfz9GHFaWI8YJ0p1+7AyCiUKSYRpzeEq4At6EVdaW2B/iU8+X35n9XiDPOGMFH8FzZP6kXogOer15j+65oPaKS7yrKaPM3axyUkIeGCE+72x1ZyUoaWa1dsZOJmBaa6IbMRBC7Xnx2NJxwQFjEGdNYBv2FnrXzAHD5XVVoms2PsIVPxn6cXu6csHXme/BoNYinhVWRREHs0JuIgINQcl7oiPWdbBlBjz2OLqlHZfFtmcKcfywisA79EFYH7qU5cxtCGwOiAhMxCZKcZ4KF37p2wmehqhhZPAg4RU7tcZf6LOKeS/ji/g1zt/PPcIXpQ1VBZCzAkDuX6Qw6yPSLAW5W8HR80kMOZKOJfKThU4+gfgqZUo9b9zFsDiIorn+0QkaZqokhqwdtlUbzoSKbuYd9L0D9ubsCHF+KWkHq3qTxhZ012YbBmcE43HKpKUoZwC4hlTQcffdSfx07vIxeNxKXvilZgppNPNTuib8pw0uWdsdJnmMK2sZXfe3t/ltixKDam7XvklK+GoHxMqUF5K4bc+NFs0UZVp9fJV+i+dvodNthUMp6vSlHljdd0qMo291MaNYm7J7ofo+qkhvTAKjqyRIvfJfFdeQvGnFMGew+Nb0EkGIOoyaU5TK9vGCizmBLgz/22mifFf+T9ycHr/bpEsXUFkWaxBBNhktuGD8n/FsNZXPV3FuJvQNw9nz0Dhpu0Uq/DYzmmL03B/zUdzNCQS091DjeE2YGeXrY5lyPA+qM1RQDsDJkmfPEjb9kjTqV+JTS8VSGAZEH1H6dL3bCL8K/J7EUt4=</div>
+                    <div data-type="textarea" data-name="Импорт из файла keymemo" data-removable="false">U2FsdGVkX1/Zs4uNruYTyeUa/3mpxPScPOmlPqHuEFjFo+7U/qad8HH3MVExvCVtolOXWquyyngzSrPZXf536sGYJ66e0sbJIRvBqdhS4QWjsDWMDfy/h3p6srHHczRL8h9zGx5/RpyORIM83h+axDU6w4u9+Sejbf8sP55FZ3dJ2g4Kzw9DFOnccucb5BQ9YgOpgdnGK49CBhuq91wSfbcyjTijDgu18e7dOWe+GUo7U5Ku/ZuqOZccZyAN1pWdnAQFdgXbElnBl++2w2O6Tg18JR+vNtty+LXbEaUUbl5MBVQhMGOKyzSg9H82h8HeoGCFtnVpZpK/ulxPwikbu2lLuxczTagZC06dipcGrKGHgsr1UJ148wtLhAfh20ZzROz1p/UgOpVjMDpf3sb55kwLwtRP+qOmPY3ijPnv3BkIFU5KdjB/218rkQwe5xTfh6YSl9mvn/3HAoOgUpRoe3mlkCw/lH0MHzGTOtIOnJs13TK+A7lbj1zJdRZsdM/9M1ds1v5444lDL2RuZZ7KVwkpJn1dzNljtJfJrhmkm1oz+C6kQ8YL+H1IDAj68SS4DS6L/h2e28FG9snB+XLms+2XUTGZNMp6QEyBfrXFjrUSjqrDVmOp0EUnWA827j1CdewKz1Z17QUqHPGq4WMn3CYDoV25RGK4kY+0XfctTr8KXWzFrQe/8M5gDRuvLfYAOPRJINblaAI/tYnDBWserMvLBDoq+GwEzq535/Y6ToHAgA4vZhq1667/05QTcPNwjPMZBSyYfp8aHWst3+hcAwxGHlWjCu0U5d/PaVI85hJkYOTu7xtjEwgb+e27bdWuhwbgKDlNqZ/sbqC0eZGpOCxnpz3R28eBx/SsRrYL9wg+3Ll5f+wZZ0Behgjl3nLXRd//HLdV+NsnQjws6vN55A==</div>
+                    <div data-type="textarea" data-name="Изменение passphrase" data-removable="false">U2FsdGVkX1/R4h4Z2D60keZYVrD54udYoMU7lohT5iU57BRgmP2Z4VtifrH6tpcF3KT6wz5/3r8ncIFR6k6j0Q3GPKs2Q4PPEchFBMCdiB5vG+VLjA22eWEAQMLzTmD0K3/tLmJUyA3Ble6DMcPu7vcn34laMiH50lrp2NxJtFunwo+MFo4ccB4ZhwNYkcqnH4rrh9BsYaEJc/CrK9FYd1jSy7+pxoRKU0igZ/xXeDdnS1fwEyrtZG4mTu3YVck8vZGoBEuUb9y239Ggb4zbpnP7uPqMZ0RJbFhJOKD6loQMCWPIbD24BsFBcXO5qQYyRWDiG8qaq2IWJGGqtc1eNiKGm0bqoPcJlNgmqpr1JWccPxePdr9oNPmbcjo2vFkpLl/VpwAnBl+MMXYoVPKP/WFIczZkSTfQ/sOlgdhxg5xGXF5A4Qo3HCuCwQiNaU0JQchtU/xrC/nx2XcTlVSb1hrUCeKJV6TVFfduyH80/6yVQ9epHAseQHSxX7NNVZkM//YOY3XdQfUEK5CbqAQUP9qWaT85Pz3/B0Js9ySEJrL8NB5Q5Q4Co7JGyrOhQoQQmNqZ5tKyWO6V9xhAe3e7qQ==</div>
+                    <div data-type="textarea" data-name="История создания" data-removable="false">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</div>
+                    <div data-name="Достигнутые цели" data-removable="true" data-type="textarea">U2FsdGVkX1/+WkF33/f82Z4wRdnRp1z6rS6ndASoxo1pifOVk5PfSEyew8+8O9PLQC64GjAs3D8DixceWk64sctdPdcr/+wX6aMYDWcV9GQVCxuyQYJFuOvgIClgMtUWijeFlYZNUjCkJedUhLC4VoiYg4qwVtnitzHEUP4OMrwWosClQLK0nd1XGPn6Ijb5zdc4IxHUFJENQ9E7fYWYVS212BJlaVuhrpoJ4QPvsh1L+ny2ofcQ+T94T+eXjMCsBhX/KtfPmggpcEUYaVJ3m3PCfYDuxJp8tTlikdcNbL6oUt+Yt7WlR0G7t6fI4xVIGey/olyqdzUEoNtcVyieN+x7G+hF0GJt0TpiG/jNqRz5LcX/qlaFkqIMUtXLEQEt5b5rgGybv8axSt3Up4OvSkQgqtJJPBc0TZyNRNrwVyzQSP2pphd9sA7Zrz8q0Bgd0liZb64OKfdmSvz+0FxGLhPj2nrKfhkXmvYey1pCuI75HjmFHTKgaCu/HeqGv7K+CeyJNTOdAD9T6QgKNv0VUj4SLNNBpu1hA/DH4bgiPIM=</div>
+                </div>
+            </div>
+
+            <!-- settings web dav-->
+            <!-- данные для доступа к серверу webdav -->
+            <div id="div_settingsWebDav" class="form_hidden center_align" hidden="">
+                <div id="div_settingsWebDav_inner" class="div_full_screen_inner">
+                    <div id="floater_inner_settings" style="text-align: center;" class="floater-inner">
+                        <div id="form_settings">
+                            <br>
+                            <label class="label0">Webdav login</label><br>
+                            <input id="webdavLogin" type="text" maxlength="100" value="" class="field_input" autocomplete="off" /> <br>
+                            <label class="label0">Webdav password</label><br>
+                            <input id="webdavPassword" type="text" maxlength="100" value="" class="field_input" autocomplete="off" /><br>
+                            <label class="label0">Webdav server</label><br>
+                            <input id="webdavServer" type="text" maxlength="100" value="" class="field_input" autocomplete="off" /><br>
+                            <label class="label0">Webdav server port</label><br>
+                            <input id="webdavServerPort" type="text" maxlength="100" value="443" class="field_input" autocomplete="off" /><br>
+                            <label class="label0">Webdav server protocol</label><br>
+                            <input id="webdavServerProtocol" type="text" maxlength="100" value="https" class="field_input" autocomplete="off" /><br>
+                            <label class="label0">Webdav path folder</label><br>
+                            <input id="webdavPathFolder" type="text" maxlength="100" value="/keymemo-webdav/" class="field_input" autocomplete="off" /><br>
+                            <a id="WebDavTestConnection_a" class="button_active" onclick="app.WebDavTestConnection()">Test connection</a><br>
+                            <input id="webdavTestResult" type="text" maxlength="100" value="Result connection" class="field_input" autocomplete="off" readonly /><br>
+                            <a id="WebDavApplyAndReload_a" class="button_active" onclick="app.WebDavApplyAndReload()">Apply & reload</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- settings-->
+            <div id="div_settings" hidden="" class="center_align">
+                <div id="div_settings_inner" class="div_full_screen_inner" onclick="div_hide_id('div_settings');">
+                </div>
+                <div id="floater_inner_settings" style="text-align: center;" class="floater-inner">
+                    <div id="form_settings">
+                        <!--welcome_phrase-->
+                        <label class="label0">Welcome phrase</label>
+                        <br>
+                        <input id="new_welcome_phrase" type="text" maxlength="100" class="field_input" onfocus="this.value=app.welcome_phrase_element.innerHTML" />
+                        <a id="apply_new_welcome_phrase_a" class="button_active" onclick="app.change_welcome_phrase()">Apply</a>
+                        <hr>
+                        <a id="remove_local_data" class="button_active" onclick="app.remove_local_data();" style="background-color: red;"> Remove local data </a>
+                        <hr>
+                        <label class="label0">
+                            Save
+                        </label>
+                        <a id="save_as_HTML_file" class="button_active" onclick="app.save_as_HTML_in_file();">as HTML page</a>
+                        <label class="label0">
+                            on local disk
+                        </label>
+                        <hr>
+                        <a id="save_on_webdav_server" class="button_active" onclick="app.saveFileOnWebdavServer();">Save as HTML</a>
+                        <label class="label0">
+                            on webdav server
+                        </label>
+
+                        <hr>
+                        <!-- импорт из keymemo.com -->
+                        <label class="label0">Import secrets from keymemo.com</label>
+                        <br>
+                        <label class="label0">Login</label>
+                        <input id="import_from_keymemo_com_login" type="text" maxlength="100" value="" class="field_input" onkeyup="app.import_from_keymemo_com()" autocomplete="off" />
+                        <br>
+                        <label class="label0">Password</label>
+                        <input id="import_from_keymemo_com_password" type="password" value="" class="field_input" onkeyup="app.import_from_keymemo_com()" autocomplete="off" />
+                        <input type="file" id="import_from_keymemo_com_button" class="btn" onchange="app.select_file_import(event, app.include_js_keymemo_com);" disabled />
+
+                        <hr>
+                        <!-- импорт из keymemo -->
+                        <label class="label0">Import secrets from keymemo</label>
+                        <br>
+                        <input type="password" id="import_from_keymemo_org_passphrase_input" class="field_input" maxlength="50" placeholder="Enter  passphrase" autocomplete="off" />
+                        <input type="file" id="import_from_keymemo_org_passphrase_button" class="btn" onchange="app.select_file_import(event, app.include_secret_from_keymemo_org);" />
+                        <hr>
+                        <!-- новая passphrase-->
+                        <input type="password" id="new_passphrase_input" class="field_input" maxlength="50" placeholder="Enter new passphrase" onkeyup="app.new_passphrase_input_keyup()" autocomplete="off" />
+                        <a id="new_passphrase_a" class="button_not_active" onclick="app.changePassPhrase()">Apply</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!--редактируемый секрет-->
+    <div id="edited_secret" class="scrollbox center_align div_full_screen_inner" hidden>
+    </div>
+
+    <!--    ожидание с логом-->
+    <div id="waiting_with_the_log" hidden>
+        <div class="div_full_screen_inner" onclick="div_hide_id('waiting_with_the_log');"></div>
+        <div id="log-files" class="log-files">log
+        </div>
+
+        <div id="div_progress-bar_fill" class="log-files">
+            <div>
+                <span id="progress_bar_fill" style="width: 1%; align-content: center;"></span>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="etalonSecret" hidden="">
+        <div data-type="title" data-name="SecretName"></div>
+        <div data-type="field" data-name="Login"></div>
+        <div data-type="password" data-name="Password"></div>
+        <div data-type="field" data-name="Tags" data-removable="true"></div>
+        <div data-type="link" data-name="Link" data-removable="true" data-href="#del_Name text"></div>
+        <div data-type="textarea" data-name="Notes" data-removable="true"></div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            //      runTests();
+            // web worker
+            if (!app.start_from_local_disk && ('serviceWorker' in navigator)) {
+                navigator.serviceWorker
+                    .register('./service-worker.js')
+                    .then(function() {
+                        console.log('Service Worker Registered');
+                    });
+            }
+            app.state0();
+        }
+
+    </script>
+    <div id="spinner_save" class="spinner_save_wrapper" hidden="">
+        <div  class="spinner-save">
+            <div id="spinner_save_text" class="text">...working...</div>
+            <div class="spinner-save-circle spinner-save-circle-outer"></div>
+            <div class="spinner-save-circle-off spinner-save-circle-inner"></div>
+            <div class="spinner-save-circle spinner-save-circle-single-1"></div>
+            <div class="spinner-save-circle spinner-save-circle-single-2"></div>
+        </div>
+    </div>
+
+</body>
+
+<script type="text/javascript" src="scripts/davclient.js"></script>
+<!--<script type="text/javascript" src="scripts/test_client.js"></script>-->
+
+<!--    Шифрование используется с https://code.google.com/archive/p/crypto-js/
+точнее https://github.com/jakubzapletal/crypto-js/blob/master/README.md#aes-->
+<script src="scripts/CryptoJS/core.js"></script>
+<script src="scripts/CryptoJS/aes.js"></script>
+<script src="scripts/CryptoJS/evpkdf.js"></script>
+<script src="scripts/CryptoJS/cipher-core.js"></script>
+
+<script src="scripts/develop.js"></script>
+<script src="scripts/scripts.js"></script>
+
+
+<!--пароли-->
+<script src="scripts/passwords.js"></script>
+<script src="scripts/FileSaver.js"></script>
+
+
+
+</html>
