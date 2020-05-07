@@ -275,7 +275,7 @@ app.state0 = function () {
             app.load_div_list_secrets_from_localStorage();
 
             // дата сохранения секретов из localStorage
-//            let dateSecretslocalStorage = app.dateListSecretsOnLocalStorage();
+            //            let dateSecretslocalStorage = app.dateListSecretsOnLocalStorage();
 
             // ищем самый новый файл из папки 
             function getFileNameNewest(handler) {
@@ -346,13 +346,13 @@ app.state0 = function () {
                 app.debugLog('state0 - load_secrets from:' + fileName);
             }
 
-
-
             function callback(fileContents) {
-                if (app.dateListSecretsOnServer(fileContents) > app.dateListSecretsOnLocalStorage()) {
+                let dateListSecretsOnServer = app.dateListSecretsOnServer(fileContents);
+                if (dateListSecretsOnServer > app.dateListSecretsOnLocalStorage()) {
                     // на сервере webdav новее                    
-                    let string = 'The data secrets is fresh (' + dateSecretsFileWebdav + ') on Webdav server.\n\rDownload and save local?'
+                    let string = 'The data secrets is fresh (' + dateListSecretsOnServer + ') on Webdav server.\n\rDownload and save local?'
                     if (window.confirm(string)) {
+                        let SecretsFileWebdav = app.get_list_secrets_from_html(fileContents);
                         app.div_list_secrets().innerHTML = SecretsFileWebdav.innerHTML;
                         copy_div_attributes(SecretsFileWebdav, app.div_list_secrets());
                         app.need_save();
@@ -383,6 +383,7 @@ app.dateListSecretsOnLocalStorage = function () {
         dateSecretslocalStorage = "1970-00-00_00:00:01(UTC)";
     }
     app.debugLog('dateListSecretsOnLocalStorage: ' + dateSecretslocalStorage);
+    return dateSecretslocalStorage;
 }
 
 
@@ -2140,8 +2141,6 @@ app.load_div_list_secrets_from_localStorage = function () {
         app.debugLog("  data-lastchange in list_secrets:" + app.div_list_secrets().getAttribute('data-lastchange'));
 
         wrap.remove();
-        //                                app.div_list_secrets.innerHTML = SecretsFileWebdav.innerHTML;
-        //                        copy_div_attributes(SecretsFileWebdav, app.div_list_secrets);
     }
 };
 
@@ -2344,10 +2343,9 @@ app.remove_local_data = function () {
     app.div_view_secrets.style.display = 'none';
     document.getElementById('div_autosave_in').innerHTML = 'Need Reload';
     document.getElementById('secrets_and_control_element').innerHTML = '';
-    app.spinner_save_show("Clean localStorage");
-    app.spinner.innerHTML =
-        '<p class="warning_text"><br>' +
-        'Local data removed.<br><br><br>Reload the page.</p>';
+    //    app.spinner_save_show("Clean localStorage");
+    app.spinner_save_show('<p class="warning_text"><br>' +
+        'Local data removed.<br><br><br>Reload the page.</p>');
 }
 
 app.import_from_keymemo_com = function () {
