@@ -212,7 +212,7 @@ app.WebDavTestConnection = function () {
         document.getElementById('webdavServerProtocol').value,
         document.getElementById('webdavLogin').value,
         document.getElementById('webdavPassword').value);
-    client.PROPFIND(app.webdavPathFolder, alertContent, this, 1);
+    client.PROPFIND(document.getElementById('webdavPathFolder').value, alertContent, this, 1);
 }
 // сохранить настройки WebDav и перезагрузить страницу
 app.WebDavApplyAndReload = function () {
@@ -222,7 +222,6 @@ app.WebDavApplyAndReload = function () {
     localStorage['webdavServerPort'] = document.getElementById('webdavServerPort').value;
     localStorage['webdavServerProtocol'] = document.getElementById('webdavServerProtocol').value;
     localStorage['webdavPathFolder'] = document.getElementById('webdavPathFolder').value;
-
     window.location.reload();
 }
 
