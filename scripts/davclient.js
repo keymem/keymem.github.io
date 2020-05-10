@@ -1,3 +1,4 @@
+/*
 (function() {
     var cors_api_host = 'cors-anywhere.herokuapp.com';
     var cors_api_url = 'https://' + cors_api_host + '/';
@@ -14,6 +15,7 @@
         return open.apply(this, args);
     };
 })();
+*/
 
 /*
     davclient.js - Low-level JavaScript WebDAV client implementation

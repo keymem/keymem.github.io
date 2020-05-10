@@ -8,11 +8,10 @@ var GeneratedPassword = '';
 // https://github.com/aslakhellesoy/webdavjs
 
 // количество нажатий на ESC для logout
-let default_esc_number_press_to_out = 4;
+//let default_esc_number_press_to_out = 4;
 // количество нажатий Enter при неправильно ввевденной passphrase
-let default_enter_number_press_to_in = 4;
+//let default_enter_number_press_to_in = 4;
 
-'use strict';
 
 //Состояние приложения
 var app = {
@@ -31,15 +30,11 @@ var app = {
 
     // авторизован
     isAuthorized: false,
-    // авторизован на google drive
-    isAuthorized_gdrive: false,
     // идет проверка "есть ли список новее"
     isCheck_where_newer_list_secret: true,
     // было изменение - необходимо сохранить
     need_save_value: false,
 
-    // id папки на drive.google.com
-    //    folder_id_drive_google_com: localStorage['folder_id_drive_google_com'],
     // фраза приветствия
     welcome_phrase_element: document.getElementById('welcome_phrase'),
     // в настройках, используется при изменении фразы
@@ -53,7 +48,6 @@ var app = {
     header_input: document.getElementById('header_input'),
     header_input_div: document.getElementById('header_input_div'),
     online_offline: document.getElementById('online_offline'),
-    logo_drive: document.getElementById('logo_drive'),
     header_button: document.getElementById('headerButton'),
     header_link: document.getElementById('headerLink'),
     last_change_list_secrets: document.getElementById('last_change_list_secrets'),
@@ -95,37 +89,44 @@ var app = {
     input_value_custom: "",
 
     // для отладки
-    debug: true,
+    debug: true
 };
 
 //    // список секретов, храним в
 //    div_list_secrets: document.getElementById('div_list_secrets'),
 app.div_list_secrets = function () {
+    'use strict';
     return document.getElementById('div_list_secrets');
-}
+};
 
 // для откладки
 app.debugLog = function (text) {
+    'use strict';
     if (app.debug) {
         console.log(text);
     }
-}
+};
 // необходимо сохранение
 app.need_save = function () {
+    'use strict';
     app.need_save_value = true;
-    app.online_offline.innerHTML = 'Need SAVE!!!';
-}
+    app.online_offline.innerHTML = 'Need to SAVE!!!';
+    //    app.online_offline.classList.remove("blink_text");
+    app.online_offline.classList.add("blink_text");
+};
 
 // ctrl-f отменяет стандартный поиск и переносит фокус на поле ввода
 window.addEventListener("keydown", function (e) {
+    'use strict';
     if (e.keyCode === 114 || (e.ctrlKey && e.keyCode === 70)) {
         e.preventDefault();
         header_input.focus();
     }
-})
+});
 
 // возвращает дату изменения списка секретов в localStorage
 app.get_date_change_list_secret = function () {
+    'use strict';
     let dateSecretslocalStorage;
     dateSecretslocalStorage = app.div_list_secrets().getAttribute('data-lastchange');
     return dateSecretslocalStorage;
@@ -159,7 +160,7 @@ app.show_last_change_list_secrets = function () {
                 app.show_last_change_list_secrets();
 
                 // проверка нет ли более новой версии файла секретов каждый час
-                if (!app.isAuthorized && app.isAuthorized_gdrive && date_diff_last_change() > 3600) {
+                if (!app.isAuthorized && date_diff_last_change() > 3600) {
                     // сброс старого таймера
                     clearTimeout(app.timer_every_hour)
                     // проверка где новее секрет
@@ -202,7 +203,10 @@ app.WebDavTestConnection = function () {
         if (status != 207) {
             document.getElementById('webdavTestResult').value = statusstring + ' ' + app.webdavPathFolder;
         } else {
-            document.getElementById('webdavTestResult').value = 'Connection succeeded.';
+            document.getElementById('webdavTestResult').value = 'Connection established.';
+            document.getElementById('WebDavApplyAndReload_a').classList.add('button_active');
+            document.getElementById('WebDavApplyAndReload_a').classList.remove('button_not_active');
+
         }
     }
     // инициализируем
@@ -212,6 +216,16 @@ app.WebDavTestConnection = function () {
         document.getElementById('webdavServerProtocol').value,
         document.getElementById('webdavLogin').value,
         document.getElementById('webdavPassword').value);
+    // нормализуем имя папки 
+    let webdavPathFolder = document.getElementById('webdavPathFolder');
+    if (webdavPathFolder.value[0] != '/') {
+        webdavPathFolder.value = '/' + webdavPathFolder.value;
+    }
+    let length = webdavPathFolder.value.length;
+    if (webdavPathFolder.value[length - 1] != '/') {
+        webdavPathFolder.value = webdavPathFolder.value + '/';
+    }
+
     client.PROPFIND(document.getElementById('webdavPathFolder').value, alertContent, this, 1);
 }
 // сохранить настройки WebDav и перезагрузить страницу
@@ -1157,7 +1171,8 @@ app.construct_HTML_page_for_export = function () {
             links_on_css[i].remove();
         }
     }
-    return '<!DOCTYPE html>' + '\n' + html_page.outerHTML;
+    //    return '<!DOCTYPE html>' + '\n' + html_page.outerHTML;
+    return html_page.outerHTML;
 }
 
 // видим ли элемент?
@@ -1233,11 +1248,12 @@ app.recreate_view_secrets = function () {
                 } else {
                     classList.add('hideBlock_immediately');
                 }
-                //                }
+
             }
             //console.info("Event is: ", e);
             //console.info("Custom data is: ", e.detail);
             let isFound;
+            let Is
             let array_word = e.detail.array_word;
             if (div_source_secret && array_word.length > 0) {
                 let children = div_source_secret.children;
@@ -1246,23 +1262,25 @@ app.recreate_view_secrets = function () {
                     isFound = false;
                     // по полям секрета
                     for (j = 0; j < children.length; j++) {
-                        // текущее поле расшифровываем
-                        let current_field = children[j].innerHTML;
-                        if (current_field !== '') {
-                            let innerHTML = app.decrypt(current_field);
+                        if (app.IsArchive(div_source_secret) === app.Is_button_view_archive()) {
+                            // текущее поле расшифровываем
+                            let current_field = children[j].innerHTML;
+                            if (current_field !== '') {
+                                let innerHTML = app.decrypt(current_field);
 
-                            // экранируем символы
-                            function escape(value) {
-                                return value.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&")
-                            };
+                                // экранируем символы
+                                function escape(value) {
+                                    return value.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&")
+                                };
 
-                            let array_word_escape = escape(array_word[i]);
-                            // console.log('  array_word_escape->' + array_word_escape);
+                                let array_word_escape = escape(array_word[i]);
+                                // console.log('  array_word_escape->' + array_word_escape);
 
-                            if (innerHTML.toLowerCase().match(array_word_escape)) {
-                                //console.log('    частичное совпадение, слово ' + i + ' ->' + array_word[i] + ' поле->' + innerHTML);
-                                isFound = true;
-                                break;
+                                if (innerHTML.toLowerCase().match(array_word_escape)) {
+                                    //console.log('    частичное совпадение, слово ' + i + ' ->' + array_word[i] + ' поле->' + innerHTML);
+                                    isFound = true;
+                                    break;
+                                }
                             }
                         }
                     }
@@ -1281,11 +1299,61 @@ app.recreate_view_secrets = function () {
         return wrap_field;
     }
 
+    let IsButton_view_archive = get_div_byId('button_view_archive').getAttribute('archive');
+    let link;
 
+
+    /////////////////
+    function link_show(a) {
+        const classList = a.classList;
+        if (app.element_is_visible(a)) {
+            setTimeout(function () {
+                classList.remove('hidelink_beautifully');
+            }, app.timeout_search_animation);
+        } else {
+            classList.remove('hidelink_beautifully');
+        }
+    }
+
+    function link_hide(a) {
+        const classList = a.classList;
+        // если элемент видим
+        if (app.element_is_visible(a)) {
+            setTimeout(function () {
+                classList.add('hidelink_beautifully');
+            }, app.timeout_search_animation);
+        } else {
+            classList.add('hidelink_beautifully');
+        }
+    }
+    //////////////////
+
+
+
+    // массив ссылок на секреты
     for (i = 0; i < len_div_list_secrets; i++) {
         // текущий секрет-источник
         let this_secret = app.div_list_secrets().children[i];
-        fragment.appendChild(create_link_on_secret(this_secret));
+        let IsSecret_in_archive = this_secret.getAttribute('archive');
+
+        // ссылка на секрет
+        link = create_link_on_secret(this_secret);
+        // если список "Архивный"
+        if (IsButton_view_archive) {
+            if (IsSecret_in_archive) {
+                link_show(link.children[0]);
+            } else {
+                link_hide(link.children[0]);
+            }
+        } else {
+            if (IsSecret_in_archive) {
+                link_hide(link.children[0]);
+            } else {
+                link_show(link.children[0]);
+            }
+        }
+        // добавляем
+        fragment.appendChild(link);
     }
 
     // дата последнего изменения списка секретов
@@ -1431,6 +1499,17 @@ app.data_difference = function (data) {
 
 }
 
+// секрет архивный? - проверяется наличие атрибута 'archive' и его значение 'true'
+app.IsArchive = function (div) {
+    let archive = div.getAttribute('archive');
+    if (archive === 'true') {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+//app.edit_secret = function (source_div, link_on_secret) {}
 /**
  * Выводит выбранный секрет для редактирования
  * @param   {object}   source_div - div с секретом
@@ -1441,7 +1520,7 @@ app.edit_secret = function (source_div, link_on_secret) {
     'use strict';
     let need_save_secret = false;
 
-    // если запуск с диска - ничего не делать
+    // если запуск из файла - ничего не делать
     if (app.start_from_local_disk && undefined === source_div) {
         return;
     }
@@ -1497,6 +1576,27 @@ app.edit_secret = function (source_div, link_on_secret) {
 
     }
 
+    // плавный скрол к элементу
+    function soft_scroll(element, time) {
+        let scrool_to = () => {
+            if (element.parentElement) {
+                // scrollTop измеряет дистанцию от верха элемента до верхней точки видимого контента
+                // если до результата менее 2 px
+                const delta = Math.abs(element.offsetTop - element.parentElement.scrollTop);
+                if (delta < 3) {
+                    element.parentNode.scrollTop = element.offsetTop;
+                    clearTimeout(timerId);
+                } else {
+                    //выше или ниже
+                    const sign = Math.sign(element.offsetTop - element.parentNode.scrollTop);
+                    // отслеживаем было ли движение
+                    const tmp_scrollTop = element.parentNode.scrollTop;
+                    element.parentNode.scrollTop = element.parentNode.scrollTop + sign * delta / 4;
+                }
+            }
+        }
+        let timerId = setInterval(() => scrool_to(), time);
+    }
 
     // формирует вид записи
     // на входе - div записи-источника
@@ -1769,6 +1869,7 @@ app.edit_secret = function (source_div, link_on_secret) {
         app.div_edited_secret.innerHTML = '';
 
         let add = document.createElement('a');
+        let arc = document.createElement('a');
         let remove = document.createElement('a');
         let save = document.createElement('a');
         let cancel = document.createElement('a');
@@ -1824,6 +1925,32 @@ app.edit_secret = function (source_div, link_on_secret) {
             app.div_edited_secret.appendChild(add);
         }
 
+        // кнопка "Признак архивности"        
+        if (app.IsArchive(intermediate_div)) {
+            arc.innerHTML = 'In current';
+        } else {
+            arc.innerHTML = 'To archive';
+        }
+        arc.className = 'button_active';
+        arc.setAttribute('id', 'archive');
+
+        arc.addEventListener('click',
+            function () {
+                // секрет архивный?
+                if (app.IsArchive(intermediate_div)) {
+                    arc.innerHTML = 'To archive';
+                    intermediate_div.removeAttribute('archive');
+                    app.secret_archive_state('false');
+                } else {
+                    arc.innerHTML = 'In current';
+                    intermediate_div.setAttribute('archive', 'true');
+                    app.secret_archive_state('true');
+                }
+            });
+        if (!app.start_from_local_disk) {
+            app.div_edited_secret.appendChild(arc);
+        }
+
         //дата изменения
         let lastChange_secrets = document.createElement('div');
         lastChange_secrets.setAttribute('id', 'lastChange_secrets');
@@ -1872,7 +1999,7 @@ app.edit_secret = function (source_div, link_on_secret) {
                             need_save_secret = true;
 
                             // обновляем "последнее изменение" списка секретов
-                            app.last_change_set(app.div_list_secrets);
+                            app.last_change_set(app.div_list_secrets());
                             app.recreate_view_secrets();
                         }, 1000);
                     });
@@ -1885,15 +2012,13 @@ app.edit_secret = function (source_div, link_on_secret) {
         save.className = 'button_active';
         save.setAttribute('id', 'save_secret');
         save.addEventListener('click',
-            async function () {
+            function () {
                 let SecretName = get_name_secret(intermediate_div);
                 if (SecretName.innerHTML !== '') {
-
                     // удаляем источник секрета
                     if (source_div) {
                         source_div.remove();
                     }
-
                     // обновляем дату "последнее изменение"
                     app.last_change_set(intermediate_div);
 
@@ -1901,23 +2026,13 @@ app.edit_secret = function (source_div, link_on_secret) {
                     app.last_change_set(app.div_list_secrets());
 
                     // добавляемый текущий
+                    secret_hide();
                     app.div_list_secrets().appendChild(intermediate_div);
-
-                    // номер в списке секретов
-                    let index = app.sorting_one_div(app.div_list_secrets().childElementCount - 1);
-
+                    let index = app.sorting_one_div(intermediate_div.parentElement.childElementCount - 1);
                     app.recreate_view_secrets();
-                    app.search_header_input();
-
-                    // скрол к сохранненому элементу
-                    let current_secret = app.div_view_secrets.childNodes[index];
-                    smooth_scrolling(current_secret.parentNode, current_secret, 2);
-
-                    // подсвечиваем
-                    current_secret.firstChild.classList = 'link_on_secret link_on_secret_add';
+                    soft_scroll(app.div_view_secrets.childNodes[index], 100);
                     header_input.focus();
 
-                    secret_hide();
                 } else {
                     document.getElementById('SecretName').focus();
                 }
@@ -1992,6 +2107,15 @@ app.keypress = function (event) {
     };
 
     check_layout(event);
+}
+// переключение "Архивные- Не архивные".
+app.click_button_view_archive = function () {
+    var intermediate_div = get_div_byId('button_view_archive');
+    if (intermediate_div.getAttribute('archive') === 'true') {
+        app.secret_archive_state('false');
+    } else {
+        app.secret_archive_state('true');
+    }
 }
 // поиск в соответствии с header_input
 app.search_header_input = function () {
@@ -2069,6 +2193,30 @@ app.search_header_input = function () {
     app.timer_search = setTimeout(find_secrets, burst_delay * 5);
 };
 
+
+// true - если вид 'Archive'
+app.Is_button_view_archive = function (state) {
+    let div = get_div_byId('button_view_archive');
+    if (div.innerHTML === 'Archive') {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+// показ списка - действующий или архивный
+app.secret_archive_state = function (state) {
+    let div = get_div_byId('button_view_archive');
+    if (state === 'true') {
+        div.innerHTML = 'Archive';
+        div.setAttribute('archive', 'true');
+    } else {
+        div.innerHTML = 'Current';
+        div.removeAttribute('archive');
+    }
+    refresh_div_list_secrets();
+}
+
 /**
  * Устанавливаает значение атрибута 'data-lastChange' в текущую дату текущего секрета и охватюывающего <div>а
  * @param {div} div - <div> где ищется атрибут
@@ -2121,21 +2269,10 @@ app.save_div_list_secrets_to_localStorage = function () {
 app.load_div_list_secrets_from_localStorage = function () {
     'use strict';
     if (localStorage['list_secrets']) {
-        //        app.debugLog("  :" + app.div_list_secrets().innerHTML);
-        app.debugLog("  :" + app.div_list_secrets().outerHTML);
-        //app.div_list_secrets.outerHTML
-        //        app.div_list_secrets.innerHTML = JSON.parse(localStorage['list_secrets']);
         let wrap = document.createElement('div');
-        //        wrap.id = 'need_remove';
-
         wrap.innerHTML = JSON.parse(localStorage['list_secrets']);
-        //        app.div_list_secrets().outerHTML = '';
         app.div_list_secrets().outerHTML = wrap.innerHTML;
         copy_div_attributes(wrap, app.div_list_secrets());
-
-
-        //        app.div_list_secrets.textContent = JSON.parse(localStorage['list_secrets']);
-        app.debugLog("  :" + app.div_list_secrets().outerHTML);
         app.debugLog("  load from localStorage['list_secrets']");
         app.debugLog("  data-lastchange in list_secrets:" + app.div_list_secrets().getAttribute('data-lastchange'));
 
@@ -2178,7 +2315,6 @@ app.sorting_secrets_abc = function () {
         div1.parentNode.removeChild(div1);
         div2.parentNode.removeChild(div2);
     }
-
 
     /**
      * Сортировка текущего секрета
@@ -2273,9 +2409,9 @@ app.local_login = function (callback) {
             callback();
         }
         // проверка где новее секрет
-        setTimeout(
-            app.check_where_newer_list_secret,
-            1);
+        //        setTimeout(
+        app.check_where_newer_list_secret();
+        //            1);
     } else {
         if (callback) {
             callback();
@@ -2356,7 +2492,6 @@ app.import_from_keymemo_com = function () {
         app.import_from_keymemo_com_button.disabled = true;
     }
 }
-
 
 // дерегистрация worker
 app.unregister_service_worker = function () {

@@ -5,6 +5,7 @@
  * определяем passphrase, запускаем третий этам
  */
 set_passphrase = function () {
+    'use strict';
     let decrypt_welcome_phrase;
     // если app.passPhrase==='', то назначаем default_PassPhrase='default_PassPhrase'
     app.passPhrase = (header_input.value === '') ? 'default_PassPhrase' : header_input.value;
@@ -69,7 +70,7 @@ function state() {
             app.header_link.style.display = 'block';
             app.header_input_placeholder.textContent = 'Enter pass phrase';
             app.header_input.type = 'password';
-            app.header_input_div.style.marginLeft = 140;
+            app.header_input_div.style.marginLeft = 80;
             app.header_button.innerHTML = '⊳';
             app.header_button.onclick = set_passphrase;
             // обработка ввода для определения раскаладки и Caps Lock
