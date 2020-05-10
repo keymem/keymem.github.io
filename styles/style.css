@@ -7,7 +7,7 @@
 .head_name {
     top: 0;
     overflow: hidden;
-    padding: 10px 10px 0 10px;
+    padding: 5px 5px 0 0px;
     background: #3F51B5;
     color: #FFF;
     height: 40px;
@@ -56,7 +56,7 @@
     width: 100%;
     font-size: 150%;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
 }
 
 
@@ -80,7 +80,7 @@ label {
 .input_focus_on,
 .input_focus_off,
 .field_input {
-    padding: 5px 10px 5px 10px!important;
+    padding: 5px 10px 5px 10px !important;
     border-radius: 8px !important;
     border: 2px solid #d6e9c6;
 }
@@ -188,13 +188,13 @@ label {
 .field_title,
 .field_title_link,
 .label0,
-.lastChange_secret_title {
+.lastChange_secret_title,
+.button_radio {
     font-size: 1.2em;
     font-family: monospace ! important;
     font-weight: bold;
     color: #3F51B5;
-    запрет выделения мышью
-    -moz-user-select: none;
+    запрет выделения мышью -moz-user-select: none;
     -webkit-user-select: none;
     cursor: default;
 }
@@ -207,12 +207,12 @@ label {
 .buton_copy_not_active,
 .button_not_active,
 .button_active {
-    text-decoration: none!important;
+    text-decoration: none !important;
     align-content: center;
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
     border-radius: 10px;
-    pointer-events: all!important;
+    pointer-events: all !important;
     color: white;
     background: #3F51B5;
     line-height: 2em;
@@ -252,7 +252,7 @@ label {
 
 .buton_copy_not_active,
 .button_not_active {
-    pointer-events: none!important;
+    pointer-events: none !important;
     color: lightgray;
     background: grey;
 }
@@ -271,12 +271,12 @@ label {
 }
 
 .field_title {
-    pointer-events: none!important;
-    text-decoration: none!important;
+    pointer-events: none !important;
+    text-decoration: none !important;
 }
 
 .field_title_link {
-    pointer-events: all!important;
+    pointer-events: all !important;
     text-decoration: underline;
     cursor: pointer;
 }
@@ -349,7 +349,7 @@ body {
 
 .remove_active,
 .remove_not_active {
-    text-decoration: none!important;
+    text-decoration: none !important;
     width: 20px;
     float: left;
     font-size: 200%;
@@ -357,19 +357,19 @@ body {
 }
 
 .remove_active {
-    pointer-events: all!important;
+    pointer-events: all !important;
     color: #3F51B5;
     cursor: pointer;
 }
 
 .remove_not_active {
-    pointer-events: none!important;
+    pointer-events: none !important;
     color: lightgrey;
 }
 
 .input_focus_on {
-    background-color: white!important;
-    color: black!important;
+    background-color: white !important;
+    color: black !important;
     overflow-y: visible;
 }
 
@@ -384,14 +384,16 @@ body {
 #save_secret,
 #cancel_secret,
 #remove_secret,
-#add_field {
+#add_field,
+#archive {
     float: right;
     padding: 0px 20px 0px 20px;
     margin-right: 1em;
     margin-bottom: 1em;
 }
 
-#add_field {
+#add_field,
+#archive {
     float: right;
     padding: 0px 20px 0px 20px;
     margin: 10px 0px 10px 10px;
@@ -470,7 +472,7 @@ body {
 .warning_text {
     color: red;
     text-align: center;
-    font-size: 2em;
+    font-size: 100%;
 }
 
 .scrollbox {
@@ -1403,7 +1405,7 @@ hr {
     pointer-events: none;
     top: 0px;
     text-align: right;
-    transition: 1s ease all;
+    transition: 0.5s ease all;
     margin-top: auto;
     margin-bottom: auto;
     font-size: 150%;
@@ -1417,7 +1419,8 @@ hr {
 .welcome_phrase {
     color: white;
     font-size: 80%;
-    top: -0.7em;
+    /*    top: -0.3em;*/
+    right: 0;
     line-height: 0.7;
     text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
 }
@@ -1463,23 +1466,23 @@ hr {
 @keyframes blur {
     from {
         text-shadow: 0px 0px 10px #fff,
-        0px 0px 10px #fff,
-        0px 0px 25px #fff,
-        0px 0px 25px #fff,
-        0px 0px 25px #fff,
-        0px 0px 25px #fff,
-        0px 0px 25px #fff,
-        0px 0px 25px #fff,
-        0px 0px 50px #fff,
-        0px 0px 50px #fff,
-        0px 0px 50px #7B96B8,
-        0px 0px 150px #7B96B8,
-        0px 10px 100px #7B96B8,
-        0px 10px 100px #7B96B8,
-        0px 10px 100px #7B96B8,
-        0px 10px 100px #7B96B8,
-        0px -10px 100px #7B96B8,
-        0px -10px 100px #7B96B8;
+            0px 0px 10px #fff,
+            0px 0px 25px #fff,
+            0px 0px 25px #fff,
+            0px 0px 25px #fff,
+            0px 0px 25px #fff,
+            0px 0px 25px #fff,
+            0px 0px 25px #fff,
+            0px 0px 50px #fff,
+            0px 0px 50px #fff,
+            0px 0px 50px #7B96B8,
+            0px 0px 150px #7B96B8,
+            0px 10px 100px #7B96B8,
+            0px 10px 100px #7B96B8,
+            0px 10px 100px #7B96B8,
+            0px 10px 100px #7B96B8,
+            0px -10px 100px #7B96B8,
+            0px -10px 100px #7B96B8;
     }
 }
 
@@ -1500,3 +1503,100 @@ hr {
 .element_show {
     display: block;
 }
+
+/*------------------------------------*/
+.blink_text {
+    color: red;
+    font-size: 150%;
+    font-weight: 700;
+    /*    animation: blur .75s ease-out infinite;*/
+    /*    text-shadow: text-shadow: 0 0 5px #abc, 0 0 7px #abc;*/
+    color: white;
+    text-decoration: none;
+    /*
+    -webkit-animation: rainbow 1s linear infinite alternate;
+    -moz-animation: rainbow 1s linear infinite alternate;
+    -ms-animation: rainbow 2s linear infinite alternate;
+    -o-animation: rainbow 2s linear infinite alternate;
+*/
+    animation: rainbow 1s linear infinite alternate;
+}
+
+@-webkit-keyframes rainbow {
+    0% {
+        color: red;
+    }
+
+    33% {
+        color: blue;
+    }
+
+    66% {
+        color: red;
+    }
+}
+
+@-moz-keyframes rainbow {
+    0% {
+        color: red;
+    }
+
+    33% {
+        color: blue;
+    }
+
+    66% {
+        color: red;
+    }
+}
+
+/*------------------------------------*/
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    left: 110%;
+}
+
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent black transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+
+/*------------------------------------*/
+.button_radio {}
+
+/*------------------------------------*/
+.hidelink_beautifully{
+    font-size: 0%;
+    margin-top: 0;
+    margin-bottom: 0;
+    border: 0px;
+    width: 0;
+    padding: 0px;
+    transition: all .1s ease-in-out;
+}
+
