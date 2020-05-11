@@ -1,4 +1,4 @@
-if (app.start_from_local_disk) {
+if (('file:' === window.location.protocol.toString())) {
     (function () {
         var cors_api_host = 'cors-anywhere.herokuapp.com';
         var cors_api_url = 'https://' + cors_api_host + '/';
@@ -415,7 +415,7 @@ global.davlib = new function () {
             '<D:allprop />' +
             '</D:propfind>';
 
-            request.send(xml);
+        request.send(xml);
     };
 
     this.DavClient.prototype.DELETE = function (path, handler, context, locktoken) {
