@@ -1,19 +1,21 @@
-(function() {
-    var cors_api_host = 'cors-anywhere.herokuapp.com';
-    var cors_api_url = 'https://' + cors_api_host + '/';
-    var slice = [].slice;
-    var origin = window.location.protocol + '//' + window.location.host;
-    var open = XMLHttpRequest.prototype.open;
-    XMLHttpRequest.prototype.open = function() {
-        var args = slice.call(arguments);
-        var targetOrigin = /^https?:\/\/([^\/]+)/i.exec(args[1]);
-        if (targetOrigin && targetOrigin[0].toLowerCase() !== origin &&
-            targetOrigin[1] !== cors_api_host) {
-            args[1] = cors_api_url + args[1];
-        }
-        return open.apply(this, args);
-    };
-})();
+if (app.start_from_local_disk) {
+    (function () {
+        var cors_api_host = 'cors-anywhere.herokuapp.com';
+        var cors_api_url = 'https://' + cors_api_host + '/';
+        var slice = [].slice;
+        var origin = window.location.protocol + '//' + window.location.host;
+        var open = XMLHttpRequest.prototype.open;
+        XMLHttpRequest.prototype.open = function () {
+            var args = slice.call(arguments);
+            var targetOrigin = /^https?:\/\/([^\/]+)/i.exec(args[1]);
+            if (targetOrigin && targetOrigin[0].toLowerCase() !== origin &&
+                targetOrigin[1] !== cors_api_host) {
+                args[1] = cors_api_url + args[1];
+            }
+            return open.apply(this, args);
+        };
+    })();
+}
 
 /*
     davclient.js - Low-level JavaScript WebDAV client implementation
@@ -44,7 +46,7 @@
 
 var global = this;
 
-global.string = new function() {
+global.string = new function () {
     var string = this;
 
     this.strip = function strip(s) {
@@ -52,7 +54,7 @@ global.string = new function() {
         var stripspace = /^\s*([\s\S]*?)\s*$/;
         return stripspace.exec(s)[1];
     };
-    
+
     this.deentitize = function deentitize(s) {
         /* convert all standard XML entities to the corresponding characters */
         // first numbered entities
@@ -61,15 +63,15 @@ global.string = new function() {
             var match = numberedreg.exec(s);
             if (!match) {
                 break;
-            };
+            }
             var value = match[2];
             var base = 10;
             if (match[1]) {
                 base = 16;
-            };
+            }
             value = String.fromCharCode(parseInt(value, base));
             s = s.replace(new RegExp(match[0], 'g'), value);
-        };
+        }
         // and standard ones
         s = s.replace(/&gt;/g, '>');
         s = s.replace(/&lt;/g, '<');
@@ -77,87 +79,85 @@ global.string = new function() {
         s = s.replace(/&quot;/g, '"');
         s = s.replace(/&amp;/g, '&');
         s = s.replace(/&nbsp;/g, "");
-        
+
         // remove the xml declaration as E4X cannot parse it
         s = s.replace(/^<\?xml\s+version\s*=\s*(["'])[^\1]+\1[^?]*\?>/, "");
-        
+
         return s;
-    };  
-    
+    }
+
 
     this.encodeBase64 = function encodeBase64(input) {
-    	return base64.encode(input);
+        return base64.encode(input);
     }
 
     var base64 = {
-    		// private property
-    		_keyStr : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+        // private property
+        _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
 
-    		// public method for encoding
-    		encode : function (input) {
-    		    var output = "";
-    		    var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
-    		    var i = 0;
+        // public method for encoding
+        encode: function (input) {
+            var output = "";
+            var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+            var i = 0;
 
-    		    input = base64._utf8_encode(input);
+            input = base64._utf8_encode(input);
 
-    		    while (i < input.length) {
+            while (i < input.length) {
 
-    		        chr1 = input.charCodeAt(i++);
-    		        chr2 = input.charCodeAt(i++);
-    		        chr3 = input.charCodeAt(i++);
+                chr1 = input.charCodeAt(i++);
+                chr2 = input.charCodeAt(i++);
+                chr3 = input.charCodeAt(i++);
 
-    		        enc1 = chr1 >> 2;
-    		        enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-    		        enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-    		        enc4 = chr3 & 63;
+                enc1 = chr1 >> 2;
+                enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+                enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+                enc4 = chr3 & 63;
 
-    		        if (isNaN(chr2)) {
-    		            enc3 = enc4 = 64;
-    		        } else if (isNaN(chr3)) {
-    		            enc4 = 64;
-    		        }
+                if (isNaN(chr2)) {
+                    enc3 = enc4 = 64;
+                } else if (isNaN(chr3)) {
+                    enc4 = 64;
+                }
 
-    		        output = output +
-    		        base64._keyStr.charAt(enc1) + base64._keyStr.charAt(enc2) +
-    		        base64._keyStr.charAt(enc3) + base64._keyStr.charAt(enc4);
+                output = output +
+                    base64._keyStr.charAt(enc1) + base64._keyStr.charAt(enc2) +
+                    base64._keyStr.charAt(enc3) + base64._keyStr.charAt(enc4);
 
-    		    }
+            }
 
-    		    return output;
-    		},
-    		
+            return output;
+        },
 
-    		// private method for UTF-8 encoding
-    		_utf8_encode : function (string) {
-    		    string = string.replace(/\r\n/g,"\n");
-    		    var utftext = "";
 
-    		    for (var n = 0; n < string.length; n++) {
+        // private method for UTF-8 encoding
+        _utf8_encode: function (string) {
+            string = string.replace(/\r\n/g, "\n");
+            var utftext = "";
 
-    		        var c = string.charCodeAt(n);
+            for (var n = 0; n < string.length; n++) {
 
-    		        if (c < 128) {
-    		            utftext += String.fromCharCode(c);
-    		        }
-    		        else if((c > 127) && (c < 2048)) {
-    		            utftext += String.fromCharCode((c >> 6) | 192);
-    		            utftext += String.fromCharCode((c & 63) | 128);
-    		        }
-    		        else {
-    		            utftext += String.fromCharCode((c >> 12) | 224);
-    		            utftext += String.fromCharCode(((c >> 6) & 63) | 128);
-    		            utftext += String.fromCharCode((c & 63) | 128);
-    		        }
+                var c = string.charCodeAt(n);
 
-    		    }
+                if (c < 128) {
+                    utftext += String.fromCharCode(c);
+                } else if ((c > 127) && (c < 2048)) {
+                    utftext += String.fromCharCode((c >> 6) | 192);
+                    utftext += String.fromCharCode((c & 63) | 128);
+                } else {
+                    utftext += String.fromCharCode((c >> 12) | 224);
+                    utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+                    utftext += String.fromCharCode((c & 63) | 128);
+                }
 
-    		    return utftext;
-    		}    		
-    	}                
+            }
+
+            return utftext;
+        }
+    }
 };
 
-global.davlib = new function() {
+global.davlib = new function () {
     /* WebDAV for JavaScript
     
         This is a library containing a low-level and (if loaded, see 
@@ -248,7 +248,7 @@ global.davlib = new function() {
         '507': 'Insufficient Storage'
     };
 
-    this.DavClient = function() {
+    this.DavClient = function () {
         /* Low level (subset of) WebDAV client implementation 
         
             Basically what one would expect from a basic DAV client, it
@@ -344,7 +344,7 @@ global.davlib = new function() {
         */
     };
 
-    this.DavClient.prototype.initialize = function(host, port, protocol, username, password) {
+    this.DavClient.prototype.initialize = function (host, port, protocol, username, password) {
         /* the 'constructor' (needs to be called explicitly!!) 
         
             host - the host name or IP
@@ -355,14 +355,14 @@ global.davlib = new function() {
         */
         this.host = host || location.hostname;
         this.port = port || location.port || 443;
-        this.protocol = (protocol || location.protocol.substr(0, location.protocol.length - 1 ) || 'https');
+        this.protocol = (protocol || location.protocol.substr(0, location.protocol.length - 1) || 'https');
         this.username = username || null;
         this.password = password || null;
-        
+
         this.request = null;
     };
 
-    this.DavClient.prototype.OPTIONS = function(path, handler, context) {
+    this.DavClient.prototype.OPTIONS = function (path, handler, context) {
         /* perform an OPTIONS request
 
             find out which HTTP methods are understood by the server
@@ -372,7 +372,7 @@ global.davlib = new function() {
         request.send('');
     };
 
-    this.DavClient.prototype.GET = function(path, handler, context) {
+    this.DavClient.prototype.GET = function (path, handler, context) {
         /* perform a GET request 
         
             retrieve the contents of a resource
@@ -381,8 +381,8 @@ global.davlib = new function() {
         request.send('');
     };
 
-    this.DavClient.prototype.PUT = function(path, content, handler, 
-                                            context, locktoken) {
+    this.DavClient.prototype.PUT = function (path, content, handler,
+        context, locktoken) {
         /* perform a PUT request 
         
             save the contents of a resource to the server
@@ -396,28 +396,29 @@ global.davlib = new function() {
         };
         request.send(content);
     };
-    
-    this.DavClient.prototype.PROPFIND = function(path, handler, context, depth) {
-    	/* perform a PROPFIND request
+
+    this.DavClient.prototype.PROPFIND = function (path, handler, context, depth) {
+        /* perform a PROPFIND request
 
 		read the metadata of a resource (optionally including its children)
 
 		'depth' - control recursion depth, default 0 (only returning the
 		properties for the resource itself)
     	 */
-    	var request = this._getRequest('PROPFIND', path, handler, context);
-    	depth = depth || 0;
-    	request.setRequestHeader('Depth', depth);
-    	request.setRequestHeader('Content-type', 'text/xml; charset=UTF-8');
-    	// 	XXX maybe we want to change this to allow getting selected props
-    	var xml = '<?xml version="1.0" encoding="UTF-8" ?>' +
-    	'<D:propfind xmlns:D="DAV:">' +
-    	'<D:allprop />' +
-    	'</D:propfind>';
-    	request.send(xml);
-    };        
+        var request = this._getRequest('PROPFIND', path, handler, context);
+        depth = depth || 0;
+        request.setRequestHeader('Depth', depth);
+        request.setRequestHeader('Content-type', 'text/xml; charset=UTF-8');
+        // 	XXX maybe we want to change this to allow getting selected props
+        var xml = '<?xml version="1.0" encoding="UTF-8" ?>' +
+            '<D:propfind xmlns:D="DAV:">' +
+            '<D:allprop />' +
+            '</D:propfind>';
 
-    this.DavClient.prototype.DELETE = function(path, handler, context, locktoken) {
+            request.send(xml);
+    };
+
+    this.DavClient.prototype.DELETE = function (path, handler, context, locktoken) {
         /* perform a DELETE request 
         
             remove a resource (recursively)
@@ -430,8 +431,8 @@ global.davlib = new function() {
         request.send('');
     };
 
-    this.DavClient.prototype.MKCOL = function(path, handler, 
-                                              context, locktoken) {
+    this.DavClient.prototype.MKCOL = function (path, handler,
+        context, locktoken) {
         /* perform a MKCOL request
 
             create a collection
@@ -443,7 +444,7 @@ global.davlib = new function() {
         request.send('');
     };
 
-    this.DavClient.prototype.COPY = function(path, topath, handler, context, overwrite, locktoken) {
+    this.DavClient.prototype.COPY = function (path, topath, handler, context, overwrite, locktoken) {
         /* perform a COPY request
 
             create a copy of a resource
@@ -464,7 +465,7 @@ global.davlib = new function() {
         request.send('');
     };
 
-    this.DavClient.prototype.MOVE = function(path, topath, handler, context, overwrite, locktoken) {
+    this.DavClient.prototype.MOVE = function (path, topath, handler, context, overwrite, locktoken) {
         /* perform a MOVE request
 
             move a resource from location
@@ -487,30 +488,30 @@ global.davlib = new function() {
 
 
 
-    this.DavClient.prototype._getRequest = function(method, path, 
-                                                    handler, context) {
+    this.DavClient.prototype._getRequest = function (method, path,
+        handler, context) {
         /* prepare a request */
         var request = davlib.getXmlHttpRequest();
         request.onreadystatechange = this._wrapHandler(handler, request, context);
 
         var url = this._generateUrl(path);
         request.open(method, url, true);
-//        request.setRequestHeader('Accept-Encoding', ' ');
-        request.setRequestHeader('Authorization', this._createBasicAuth(this.username, this.password));        		
-        
+        //        request.setRequestHeader('Accept-Encoding', ' ');
+        request.setRequestHeader('Authorization', this._createBasicAuth(this.username, this.password));
+
         return request
     };
 
-    this.DavClient.prototype._wrapHandler = function(handler, request, context) {
+    this.DavClient.prototype._wrapHandler = function (handler, request, context) {
         /* wrap the handler with a callback
 
             The callback handles multi-status parsing and calls the client's
             handler when done
         */
         var self = this;
-        
+
         function HandlerWrapper() {
-            this.execute = function() {
+            this.execute = function () {
                 if (request.readyState == 4) {
                     var status = request.status.toString();
                     var headers = self._parseHeaders(request.getAllResponseHeaders());
@@ -524,7 +525,7 @@ global.davlib = new function() {
     };
 
 
-    this.DavClient.prototype._generateUrl = function(path){
+    this.DavClient.prototype._generateUrl = function (path) {
         /* convert a url from a path */
         var url = this.protocol + '://' + this.host;
         if (this.port) {
@@ -534,18 +535,18 @@ global.davlib = new function() {
         return url;
     };
 
-    
+
     this.DavClient.prototype._createBasicAuth = function (user, password) {
-    	  var tok = user + ':' + password;
-    	  var hash = string.encodeBase64(tok);
-    	  return "Basic " + hash;
+        var tok = user + ':' + password;
+        var hash = string.encodeBase64(tok);
+        return "Basic " + hash;
     }
 
 
-    this.DavClient.prototype._parseHeaders = function(headerstring) {
+    this.DavClient.prototype._parseHeaders = function (headerstring) {
         var lines = headerstring.split('\n');
         var headers = {};
-        for (var i=0; i < lines.length; i++) {
+        for (var i = 0; i < lines.length; i++) {
             var line = string.strip(lines[i]);
             if (!line) {
                 continue;
@@ -568,29 +569,29 @@ global.davlib = new function() {
     };
 
     // some helper functions
-    this.getXmlHttpRequest = function() {
+    this.getXmlHttpRequest = function () {
         /* instantiate an XMLHTTPRequest 
 
             this can be improved by testing the user agent better and, in case 
             of IE, finding out which MSXML is installed and such, but it 
             seems to work just fine for now
         */
-        try{
+        try {
             return new XMLHttpRequest();
-        } catch(e) {
+        } catch (e) {
             // not a Mozilla or Konqueror based browser
         };
         try {
             return new ActiveXObject('Microsoft.XMLHTTP');
-        } catch(e) {
+        } catch (e) {
             // not IE either...
         };
         alert('Your browser does not support XMLHttpRequest, required for ' +
-                'WebDAV access.');
-        throw('Browser not supported');
+            'WebDAV access.');
+        throw ('Browser not supported');
     };
 
-    this.debug = function(text) {
+    this.debug = function (text) {
         /* simple debug function
 
             set the DEBUG global to some true value, and messages will appear

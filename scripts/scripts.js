@@ -28,8 +28,6 @@ var app = {
     // полный путь хранения файлов webdav, включая '/'
     webdavPathFolder: '' || '/keymemo-webdav/',
 
-    // авторизован
-    isAuthorized: false,
     // идет проверка "есть ли список новее"
     isCheck_where_newer_list_secret: true,
     // было изменение - необходимо сохранить
@@ -127,25 +125,25 @@ window.addEventListener("keydown", function (e) {
 // возвращает дату изменения списка секретов в localStorage
 app.get_date_change_list_secret = function () {
     'use strict';
-    let dateSecretslocalStorage;
-    dateSecretslocalStorage = app.div_list_secrets().getAttribute('data-lastchange');
-    return dateSecretslocalStorage;
-}
+    return app.div_list_secrets().getAttribute('data-lastchange');
+};
 
 // имя файла для сохранения
 app.file_name_for_save = function () {
-    //    return 'keymemo_' + app.get_date_change_list_secret() + '.html'
-    return app.fileNameMask + app.get_date_change_list_secret() + '.html'
-}
+    'use strict';
+    return app.fileNameMask + app.get_date_change_list_secret() + '.html';
+};
 
 // возвращает в виде строки и даты разницу между текущим временем и переданным
 app.data_change_diff_now = function (date) {
+    'use strict';
     return (app.data_difference(date) +
         '<br><span class="lastChange_secret_title">' + date + '</span>');
-}
+};
 
 // вывод даты изменения списка секретов
 app.show_last_change_list_secrets = function () {
+    'use strict';
     app.last_change_list_secrets.innerHTML = app.data_change_diff_now(app.get_date_change_list_secret());
 
     // разница между "сейчас" и временем изменения списком секрета в секундах
@@ -158,11 +156,10 @@ app.show_last_change_list_secrets = function () {
     app.timer_out_update_last_change_list_secrets =
         setTimeout(function () {
                 app.show_last_change_list_secrets();
-
                 // проверка нет ли более новой версии файла секретов каждый час
-                if (!app.isAuthorized && date_diff_last_change() > 3600) {
+                if (date_diff_last_change() > 3600) {
                     // сброс старого таймера
-                    clearTimeout(app.timer_every_hour)
+                    clearTimeout(app.timer_every_hour);
                     // проверка где новее секрет
                     app.timer_every_hour = setTimeout(
                         app.check_where_newer_list_secret,
@@ -176,7 +173,7 @@ app.show_last_change_list_secrets = function () {
 
     // если запускается на https://keymemo.github.io/
     // то предложить инструкцию по размещению на своих мощностях
-    if (app.start_from_keymemo_github_io && !app.isAuthorized) {
+    if (app.start_from_keymemo_github_io) {
         // ссылка на инструкцию
         app.last_change_list_secrets.innerHTML = app.last_change_list_secrets.innerHTML +
             '<p><a href="https://github.com/keymemo/keymemo.github.io/blob/master/place_on_your_site.md" target="_blank" class="link_external">Place on your site(self-hosted).</a></p>';
@@ -282,97 +279,103 @@ app.state0 = function () {
         if (!localStorage['webdavServer']) {
             app.debugLog('state0 - webdav settings in localStorage NOT exists');
             app.SetSettingsWebDav();
-        } else {
+        } else { // настройки есть
             app.debugLog('state0 - webdav settings in localStorage exists');
             // загружаем 
             app.load_div_list_secrets_from_localStorage();
+            if (navigator.onLine) { // доступ к сети есть
 
-            // дата сохранения секретов из localStorage
-            //            let dateSecretslocalStorage = app.dateListSecretsOnLocalStorage();
+                // дата сохранения секретов из localStorage
+                //            let dateSecretslocalStorage = app.dateListSecretsOnLocalStorage();
 
-            // ищем самый новый файл из папки 
-            function getFileNameNewest(handler) {
-                var wrapped = function (status, statusstr, content) {
-                    // multistatus request
-                    if (content && status == 207) {
+                // ищем самый новый файл из папки 
+                function getFileNameNewest(handler) {
+                    var wrapped = function (status, statusstr, content) {
+                        // multistatus request
+                        if (content && status == 207) {
 
-                        var parser, doc = null;
-                        if (window.DOMParser) {
-                            parser = new DOMParser();
-                            doc = parser.parseFromString(string.deentitize(content), "application/xml");
-                        } else { // Internet Explorer :-)
-                            doc = new ActiveXObject("Microsoft.XMLDOM");
-                            doc.loadXML(content);
-                        }
+                            var parser, doc = null;
+                            if (window.DOMParser) {
+                                parser = new DOMParser();
+                                doc = parser.parseFromString(string.deentitize(content), "application/xml");
+                            } else { // Internet Explorer :-)
+                                doc = new ActiveXObject("Microsoft.XMLDOM");
+                                doc.loadXML(content);
+                            }
 
-                        // возврат имени файла самого нового по дате создания
-                        function NameNewCreationDate(content) {
-                            // отбор только файлов по маске и самый новый файл по дате создания
-                            let doc = new DOMParser().parseFromString(content, "application/xml");
-                            let fileNameElements = doc.getElementsByTagName('d:displayname');
-                            let fileCreationDateElements = doc.getElementsByTagName('d:creationdate');
-                            //                        var fileName = [];
-                            //                        var fileCreationDate = [];
-                            let fileName = "";
-                            let fileCreationDate = "0";
-                            let regexp = new RegExp(app.fileNameMask + '.+');
-                            //                        app.debugLog('state0 - regexp: ' + regexp);
-                            for (let i = 0; i < fileNameElements.length; i++) {
-                                let name = fileNameElements[i].textContent;
-                                // app.debugLog('state0 - name: ' + name);
-                                // app.debugLog('state0 - name.search(regexp): ' + name.search(regexp));
-                                if (name.search(regexp) != -1) {
-                                    let newCreationDate = fileCreationDateElements[i].textContent;
-                                    if (newCreationDate > fileCreationDate) {
-                                        fileName = name;
-                                        fileCreationDate = newCreationDate;
-                                        // app.debugLog('state0         - ADD fileName: ' + fileName + ' fileCreationDate:' + fileCreationDate);
+                            // возврат имени файла самого нового по дате создания
+                            function NameNewCreationDate(content) {
+                                // отбор только файлов по маске и самый новый файл по дате создания
+                                let doc = new DOMParser().parseFromString(content, "application/xml");
+                                let fileNameElements = doc.getElementsByTagName('d:displayname');
+                                let fileCreationDateElements = doc.getElementsByTagName('d:creationdate');
+                                //                        var fileName = [];
+                                //                        var fileCreationDate = [];
+                                let fileName = "";
+                                let fileCreationDate = "0";
+                                let regexp = new RegExp(app.fileNameMask + '.+');
+                                //                        app.debugLog('state0 - regexp: ' + regexp);
+                                for (let i = 0; i < fileNameElements.length; i++) {
+                                    let name = fileNameElements[i].textContent;
+                                    // app.debugLog('state0 - name: ' + name);
+                                    // app.debugLog('state0 - name.search(regexp): ' + name.search(regexp));
+                                    if (name.search(regexp) != -1) {
+                                        let newCreationDate = fileCreationDateElements[i].textContent;
+                                        if (newCreationDate > fileCreationDate) {
+                                            fileName = name;
+                                            fileCreationDate = newCreationDate;
+                                            // app.debugLog('state0         - ADD fileName: ' + fileName + ' fileCreationDate:' + fileCreationDate);
+                                        }
                                     }
                                 }
+                                app.debugLog('state0 - fileName: ' + fileName + '. fileCreationDate:' + fileCreationDate);
+                                return fileName;
                             }
-                            app.debugLog('state0 - fileName: ' + fileName + '. fileCreationDate:' + fileCreationDate);
-                            return fileName;
-                        }
 
-                        handler(NameNewCreationDate(content));
+                            handler(NameNewCreationDate(content));
+                        };
                     };
-                };
 
-                return wrapped;
-            };
-
-            let client = app.webdavInitialize();
-            client.PROPFIND(app.webdavPathFolder, getFileNameNewest(load_secrets), this, 1);
-
-            // загрузка секретов из самого нового файла
-            function load_secrets(fileName) {
-                function wrapContinueHandler(handler) {
-                    var wrapped = function (status, statusstr, content) {
-                        handler(content);
-                    };
                     return wrapped;
                 };
 
                 let client = app.webdavInitialize();
-                client.GET(app.webdavPathFolder + fileName, wrapContinueHandler(callback));
+                client.PROPFIND(app.webdavPathFolder, getFileNameNewest(load_secrets), this, 1);
 
-                app.debugLog('state0 - load_secrets from:' + fileName);
-            }
+                // загрузка секретов из самого нового файла
+                function load_secrets(fileName) {
+                    function wrapContinueHandler(handler) {
+                        var wrapped = function (status, statusstr, content) {
+                            handler(content);
+                        };
+                        return wrapped;
+                    };
 
-            function callback(fileContents) {
-                let dateListSecretsOnServer = app.dateListSecretsOnServer(fileContents);
-                if (dateListSecretsOnServer > app.dateListSecretsOnLocalStorage()) {
-                    // на сервере webdav новее                    
-                    let string = 'The data secrets is fresh (' + dateListSecretsOnServer + ') on Webdav server.\n\rDownload and save local?'
-                    if (window.confirm(string)) {
-                        let SecretsFileWebdav = app.get_list_secrets_from_html(fileContents);
-                        app.div_list_secrets().innerHTML = SecretsFileWebdav.innerHTML;
-                        copy_div_attributes(SecretsFileWebdav, app.div_list_secrets());
-                        app.need_save();
-                        app.logout();
-                    }
+                    let client = app.webdavInitialize();
+                    client.GET(app.webdavPathFolder + fileName, wrapContinueHandler(callback));
+
+                    app.debugLog('state0 - load_secrets from:' + fileName);
                 }
-                app.online_offline.innerHTML = 'Synchronized';
+
+                function callback(fileContents) {
+                    let dateListSecretsOnServer = app.dateListSecretsOnServer(fileContents);
+                    if (dateListSecretsOnServer > app.dateListSecretsOnLocalStorage()) {
+                        // на сервере webdav новее                    
+                        let string = 'The data secrets is fresh (' + dateListSecretsOnServer + ') on Webdav server.\n\rDownload and save local?'
+                        if (window.confirm(string)) {
+                            let SecretsFileWebdav = app.get_list_secrets_from_html(fileContents);
+                            app.div_list_secrets().innerHTML = SecretsFileWebdav.innerHTML;
+                            copy_div_attributes(SecretsFileWebdav, app.div_list_secrets());
+                            app.need_save();
+                            app.logout();
+                        }
+                    }
+                    app.online_offline.innerHTML = 'Synchronized';
+                    app.state1();
+                }
+            } else {
+                app.debugLog('state0 - without Internet');
+                app.online_offline.innerHTML = 'LocalStorage';
                 app.state1();
             }
         }
@@ -2116,15 +2119,16 @@ app.click_button_view_archive = function () {
     } else {
         app.secret_archive_state('true');
     }
+    app.search_header_input(true);
 }
 // поиск в соответствии с header_input
-app.search_header_input = function () {
+app.search_header_input = function (forceExecute) {
 
     // задержка для вывода/сокрытия "пачками"
     let burst_delay = 100; // 1000=1 сек
 
     // поиск по всем полям секретов, ненайденные скрываются.
-    function find_secrets() {
+    function find_secrets(forceExecute) {
         'use strict';
         let header_input_value = app.header_input.value;
         //        console.log("NEW search, app.timer_search=", app.timer_search, " header_input.value=", header_input_value);
@@ -2142,7 +2146,7 @@ app.search_header_input = function () {
         input_value = input_value.replace(/\s+$/, ''); // все пробельные символы в конце строки
 
         // если строка поиска изменилась - ищем
-        if (app.input_value_custom != input_value) {
+        if ((app.input_value_custom != input_value) || forceExecute) {
             // затемнение
             setTimeout(function () {
                 //                app.div_view_secrets.classList.add('now_is_searching');
@@ -2166,7 +2170,6 @@ app.search_header_input = function () {
 
             let currentTime = new Date();
             // по всем секретам с конца
-            //        for (i = 0; i < view_secrets_children.length; i++) {
             for (let i = view_secrets_children.length - 1; i >= 0; i--) {
                 let now = new Date();
                 // если время следующей пачки подошло - назначаем новое время
@@ -2181,16 +2184,13 @@ app.search_header_input = function () {
 
             // снимаем затемнение
             setTimeout(function () {
-                //                app.div_view_secrets.classList.remove('now_is_searching');
-                //                void app.div_view_secrets.offsetWidth;
                 app.spinner_save_none();
             }, currentTime.getMilliseconds() + burst_delay * 2 - (new Date()).getMilliseconds());
         }
-        //        console.log("search end, app.timer_search=", app.timer_search);
     }
 
     clearTimeout(app.timer_search);
-    app.timer_search = setTimeout(find_secrets, burst_delay * 5);
+    app.timer_search = setTimeout(find_secrets, burst_delay * 5, forceExecute);
 };
 
 
@@ -2397,7 +2397,6 @@ app.logout = function () {
     } else {
         location.reload();
     }
-    app.isAuthorized = false;
 }
 
 // загрузка параметров
