@@ -10,7 +10,7 @@ var GeneratedPassword = '';
 // количество нажатий на ESC для logout
 //let default_esc_number_press_to_out = 4;
 // количество нажатий Enter при неправильно ввевденной passphrase
-//let default_enter_number_press_to_in = 4;
+let default_enter_number_press_to_in = 4;
 
 
 //Состояние приложения
