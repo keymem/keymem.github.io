@@ -1,4 +1,4 @@
-if (('file:' === window.location.protocol.toString())) {
+if (('127.0.0.1' !== window.location.hostname)) {
     (function () {
         var cors_api_host = 'cors-anywhere.herokuapp.com';
         var cors_api_url = 'https://' + cors_api_host + '/';
