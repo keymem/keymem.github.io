@@ -1786,7 +1786,10 @@ app.edit_secret = function (source_div, link_on_secret) {
                 } else
                 if (app.passPhrase !== '') {
                     div.innerHTML = app.encrypt(this.value);
-                    this.value = div.innerHTML;
+                    // не шифруем поле 'SecretName' 
+                    if (element_input.getAttribute('id') != 'SecretName') {
+                        this.value = div.innerHTML;
+                    }                    
 
                     // кнопку удаления выключаем
                     element_del.className = 'remove_not_active';
