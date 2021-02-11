@@ -223,7 +223,8 @@ app.WebDavTestConnection = function () {
         webdavPathFolder.value = webdavPathFolder.value + '/';
     }
 
-    client.PROPFIND(document.getElementById('webdavPathFolder').value, alertContent, this, 1);
+//    client.PROPFIND(document.getElementById('webdavPathFolder').value, alertContent, this, 1);
+    client.PROPFIND(webdavPathFolder.value, alertContent, this, 1);
 }
 // сохранить настройки WebDav и перезагрузить страницу
 app.WebDavApplyAndReload = function () {
