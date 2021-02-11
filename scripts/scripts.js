@@ -2386,8 +2386,8 @@ app.save_as_HTML_in_file = function () {
 app.save_as_HTML_file_on_webdav_server = function (callback) {
     'use strict';
     div_hide(app.div_settings);
-    app.unregister_service_worker();
     app.saveFileOnWebdavServer(callback);
+    app.unregister_service_worker();
 }
 
 // сохранение параметров в localStorage
