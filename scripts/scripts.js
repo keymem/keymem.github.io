@@ -192,6 +192,7 @@ app.webdavInitialize = function () {
         localStorage['webdavServerProtocol'],
         localStorage['webdavLogin'],
         localStorage['webdavPassword']);
+    app.webdavPathFolder = localStorage['webdavPathFolder'];
     return client;
 }
 // проверка подключения к webdav серверу
