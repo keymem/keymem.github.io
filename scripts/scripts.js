@@ -971,7 +971,7 @@ app.include_secret_from_keymemo_org = function (fileContents) {
         // по записям
         for (j = 0; j < secret.childElementCount; j++) {
             let decrypt_secret = app.decrypt(secret.children[j].innerHTML, import_passPhrase);
-            secret.children[j].innerHTML = app.encrypt(decrypt_secret, app.passPhrase);
+            secret.children[j].innerHTML = app.encrypt(decrypt_secret, import_passPhrase);
         }
 
     }
