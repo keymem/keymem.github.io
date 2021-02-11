@@ -1466,7 +1466,6 @@ app.data_difference = function (data) {
     // 2 дня назад 60*60*24*2
     if (data_diff > 172800) {
         return (parseInt(data_diff / 86400) + " days ago");
-        172800
     }
 
     // 1 день назад 60*60*24*1
