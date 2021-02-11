@@ -491,11 +491,13 @@ app.encrypt = function (value, passPhrase) {
     passPhrase = passPhrase || app.passPhrase;
     let encrypted_string = '';
 
-    try {
-        encrypted_string = CryptoJS.AES.encrypt(value.toString(), passPhrase);
-    } catch (err) {
-        encrypted_string = '';
-        console.log('Зашифровать не удалось. Непечатные символы??? "' + value + '"');
+    if (undefined !== value) {
+        try {
+            encrypted_string = CryptoJS.AES.encrypt(value.toString(), passPhrase);
+        } catch (err) {
+            encrypted_string = '';
+            console.log('Зашифровать не удалось. Непечатные символы??? "' + value + '"');
+        }
     }
     return encrypted_string;
 };
