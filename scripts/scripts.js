@@ -222,7 +222,7 @@ app.WebDavTestConnection = function () {
     if (webdavPathFolder.value[length - 1] != '/') {
         webdavPathFolder.value = webdavPathFolder.value + '/';
     }
-
+    app.webdavPathFolder = webdavPathFolder.value;
 //    client.PROPFIND(document.getElementById('webdavPathFolder').value, alertContent, this, 1);
     client.PROPFIND(webdavPathFolder.value, alertContent, this, 1);
 }
