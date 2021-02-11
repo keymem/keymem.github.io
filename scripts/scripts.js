@@ -981,6 +981,8 @@ app.include_secret_from_keymemo_org = function (fileContents) {
     wrap.remove();
 
     app.div_list_secrets().innerHTML = app.div_list_secrets().innerHTML + '\n' + import_secrets.innerHTML;
+    
+    app.passPhrase = import_passPhrase;
 
     // дата последнего изменения секретов
     app.last_change_set(app.div_list_secrets());
