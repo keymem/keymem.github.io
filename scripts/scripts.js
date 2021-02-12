@@ -310,7 +310,8 @@ app.state0 = function () {
                                 // отбор только файлов по маске и самый новый файл по дате создания
                                 let doc = new DOMParser().parseFromString(content, "application/xml");
                                 let fileNameElements = doc.getElementsByTagName('d:displayname');
-                                let fileCreationDateElements = doc.getElementsByTagName('d:creationdate');
+                                //let fileCreationDateElements = doc.getElementsByTagName('d:creationdate');
+                                let fileCreationDateElements = doc.getElementsByTagName('d:getlastmodified');
                                 //                        var fileName = [];
                                 //                        var fileCreationDate = [];
                                 let fileName = "";
