@@ -316,7 +316,7 @@ app.state0 = function () {
                                 //                        var fileCreationDate = [];
                                 let fileName = "";
                                 let fileCreationDate = "0";
-                                let regexp = new RegExp(app.fileNameMask + '.+');
+                                let regexp = new RegExp('+.' + app.fileNameMask + '.+');
                                 //                        app.debugLog('state0 - regexp: ' + regexp);
                                 for (let i = 0; i < fileCreationDateElements.length; i++) {
                                     let name = fileCreationDateElements[i].textContent;
