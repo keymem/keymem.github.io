@@ -309,7 +309,7 @@ app.state0 = function () {
                             function NameNewCreationDate(content) {
                                 // отбор только файлов по маске и самый новый файл по дате создания
                                 let doc = new DOMParser().parseFromString(content, "application/xml");
-//                                let fileNameElements = doc.getElementsByTagName('d:displayname');
+                                let fileNameElements = doc.getElementsByTagName('d:displayname');
                                 //let fileCreationDateElements = doc.getElementsByTagName('d:creationdate');
                                 let fileCreationDateElements = doc.getElementsByTagName('d:getlastmodified');
                                 //                        var fileName = [];
@@ -318,8 +318,8 @@ app.state0 = function () {
                                 let fileCreationDate = "0";
                                 let regexp = new RegExp('.+' + app.fileNameMask + '.+');
                                 //                        app.debugLog('state0 - regexp: ' + regexp);
-                                for (let i = 0; i < fileCreationDateElements.length; i++) {
-                                    let name = fileCreationDateElements[i].textContent;
+                                for (let i = 0; i < fileNameElements.length; i++) {
+                                    let name = fileNameElements[i].textContent;
                                     // app.debugLog('state0 - name: ' + name);
                                     // app.debugLog('state0 - name.search(regexp): ' + name.search(regexp));
                                     if (name.search(regexp) != -1) {
