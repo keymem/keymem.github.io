@@ -224,7 +224,7 @@ app.WebDavTestConnection = function () {
         webdavPathFolder.value = webdavPathFolder.value + '/';
     }
     app.webdavPathFolder = webdavPathFolder.value;
-//    client.PROPFIND(document.getElementById('webdavPathFolder').value, alertContent, this, 1);
+    //    client.PROPFIND(document.getElementById('webdavPathFolder').value, alertContent, this, 1);
     client.PROPFIND(webdavPathFolder.value, alertContent, this, 1);
 }
 // сохранить настройки WebDav и перезагрузить страницу
@@ -305,84 +305,81 @@ app.state0 = function () {
                                 doc.loadXML(content);
                             }
 
-                            // возврат имени файла самого нового по дате создания
+                            // возврат имени файла самого нового по дате создания указанного в имени файла
                             function NameNewCreationDate(content) {
-                                // отбор только файлов по маске и самый новый файл по дате создания
-                                let doc = new DOMParser().parseFromString(content, "application/xml");
-                                let fileNameElements = doc.getElementsByTagName('d:displayname');
-                                //let fileCreationDateElements = doc.getElementsByTagName('d:creationdate');
-                                let fileCreationDateElements = doc.getElementsByTagName('d:getlastmodified');
-                                //                        var fileName = [];
-                                //                        var fileCreationDate = [];
-                                let fileName = "";
-                                let fileCreationDate = "0";
-                                let regexp = new RegExp('.+' + app.fileNameMask + '.+');
-                                //                        app.debugLog('state0 - regexp: ' + regexp);
-                                for (let i = 0; i < fileNameElements.length; i++) {
-                                    let name = fileNameElements[i].textContent;
-                                    // app.debugLog('state0 - name: ' + name);
-                                    // app.debugLog('state0 - name.search(regexp): ' + name.search(regexp));
-                                    if (name.search(regexp) != -1) {
-                                        let newCreationDate = fileCreationDateElements[i].textContent;
-                                        if (newCreationDate > fileCreationDate) {
-                                            fileName = name;
-                                            fileCreationDate = newCreationDate;
-                                            // app.debugLog('state0         - ADD fileName: ' + fileName + ' fileCreationDate:' + fileCreationDate);
+                                let text, parser, xmlDoc;
+                                let fullFileName = "";
+                                parser = new DOMParser();
+                                xmlDoc = parser.parseFromString(content, "text/xml"); {
+                                    let regexp = new RegExp('.+' + app.fileNameMask + '.+');
+                                    let fileElements = xmlDoc.getElementsByTagName('d:href');
+                                    if (fileElements.length) {
+                                        for (let i = 0; i < fileElements.length; i++) {
+                                            let name = fileElements[i].textContent;
+                                            if (name.search(regexp) != -1) {
+                                                if (name > fullFileName) {
+                                                    fullFileName = name;
+                                                }
+                                            }
                                         }
                                     }
+
                                 }
-                                app.debugLog('state0 - fileName: ' + fileName + '. fileCreationDate:' + fileCreationDate);
-                                return fileName;
-                            }
+                                app.debugLog('state0 - Full fileName: ' + fullFileName);
+                                let fileName = fullFileName.replace(/^.*(\\|\/)/, '');
+                            app.debugLog('state0 - fileName: ' + fileName);
 
-                            handler(NameNewCreationDate(content));
-                        };
+                            return fileName;
+                        }
+
+                        handler(NameNewCreationDate(content));
                     };
+                };
 
+                return wrapped;
+            };
+
+            let client = app.webdavInitialize();
+            client.PROPFIND(app.webdavPathFolder, getFileNameNewest(load_secrets), this, 1);
+
+            // загрузка секретов из самого нового файла
+            function load_secrets(fileName) {
+                function wrapContinueHandler(handler) {
+                    var wrapped = function (status, statusstr, content) {
+                        handler(content);
+                    };
                     return wrapped;
                 };
 
                 let client = app.webdavInitialize();
-                client.PROPFIND(app.webdavPathFolder, getFileNameNewest(load_secrets), this, 1);
+                client.GET(app.webdavPathFolder + fileName, wrapContinueHandler(callback));
 
-                // загрузка секретов из самого нового файла
-                function load_secrets(fileName) {
-                    function wrapContinueHandler(handler) {
-                        var wrapped = function (status, statusstr, content) {
-                            handler(content);
-                        };
-                        return wrapped;
-                    };
+                app.debugLog('state0 - load_secrets from:' + fileName);
+            }
 
-                    let client = app.webdavInitialize();
-                    client.GET(app.webdavPathFolder + fileName, wrapContinueHandler(callback));
-
-                    app.debugLog('state0 - load_secrets from:' + fileName);
-                }
-
-                function callback(fileContents) {
-                    let dateListSecretsOnServer = app.dateListSecretsOnServer(fileContents);
-                    if (dateListSecretsOnServer > app.dateListSecretsOnLocalStorage()) {
-                        // на сервере webdav новее                    
-                        let string = 'The data secrets is fresh (' + dateListSecretsOnServer + ') on Webdav server.\n\rDownload and save local?'
-                        if (window.confirm(string)) {
-                            let SecretsFileWebdav = app.get_list_secrets_from_html(fileContents);
-                            app.div_list_secrets().innerHTML = SecretsFileWebdav.innerHTML;
-                            copy_div_attributes(SecretsFileWebdav, app.div_list_secrets());
-                            app.need_save();
-                            app.logout();
-                        }
+            function callback(fileContents) {
+                let dateListSecretsOnServer = app.dateListSecretsOnServer(fileContents);
+                if (dateListSecretsOnServer > app.dateListSecretsOnLocalStorage()) {
+                    // на сервере webdav новее                    
+                    let string = 'The data secrets is fresh (' + dateListSecretsOnServer + ') on Webdav server.\n\rDownload and save local?'
+                    if (window.confirm(string)) {
+                        let SecretsFileWebdav = app.get_list_secrets_from_html(fileContents);
+                        app.div_list_secrets().innerHTML = SecretsFileWebdav.innerHTML;
+                        copy_div_attributes(SecretsFileWebdav, app.div_list_secrets());
+                        app.need_save();
+                        app.logout();
                     }
-                    app.online_offline.innerHTML = 'Synchronized';
-                    app.state1();
                 }
-            } else {
-                app.debugLog('state0 - without Internet');
-                app.online_offline.innerHTML = 'LocalStorage';
+                app.online_offline.innerHTML = 'Synchronized';
                 app.state1();
             }
+        } else {
+            app.debugLog('state0 - without Internet');
+            app.online_offline.innerHTML = 'LocalStorage';
+            app.state1();
         }
     }
+}
 }
 // дата listSecrets в файле по содержимому
 app.dateListSecretsOnServer = function (contentsIndexHtml) {
@@ -982,7 +979,7 @@ app.include_secret_from_keymemo_org = function (fileContents) {
     wrap.remove();
 
     app.div_list_secrets().innerHTML = app.div_list_secrets().innerHTML + '\n' + import_secrets.innerHTML;
-    
+
     app.passPhrase = import_passPhrase;
 
     // дата последнего изменения секретов
@@ -1795,7 +1792,7 @@ app.edit_secret = function (source_div, link_on_secret) {
                     // не шифруем поле 'SecretName' 
                     if (element_input.getAttribute('id') != 'SecretName') {
                         this.value = div.innerHTML;
-                    }                    
+                    }
 
                     // кнопку удаления выключаем
                     element_del.className = 'remove_not_active';
