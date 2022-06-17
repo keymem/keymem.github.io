@@ -1437,7 +1437,7 @@ app.now = function () {
 }
 // возвращает текстом разницу между текущим временем и переданным.
 app.data_difference = function (data) {
-
+    data.replace(/¯/g, ':')
     let data_diff = (app.now().getTime() - app.data_getTime(data).getTime()) / 1000;
 
     // более года 60*60*24*365
