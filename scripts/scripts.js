@@ -1399,8 +1399,8 @@ app.data_now = function () {
         curSeconds = '0' + curSeconds;
     }
 
-    // в формате "YYYY-MM-DD_HH:MM:SS(UTC)"
-    let date_now = curYear + '-' + curMonth + '-' + curDay + '_' + curHour + ':' + curMinute + ':' + curSeconds + '(UTC)';
+    // в формате "YYYY-MM-DD_HH-MM-SS(UTC)"
+    let date_now = curYear + '-' + curMonth + '-' + curDay + '_' + curHour + '-' + curMinute + '-' + curSeconds + '(UTC)';
     return date_now;
 };
 
