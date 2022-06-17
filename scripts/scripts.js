@@ -1438,8 +1438,8 @@ app.now = function () {
 // возвращает текстом разницу между текущим временем и переданным.
 app.data_difference = function (data) {
     console.log('data: ' + data);
-    console.log('app.data_getTime(data).getTime(): ' + app.data_getTime(data).getTime());
-    data.replace(/¯/g, ':');
+    
+    let data = data.replace(/¯/g, ':');
     console.log('data: ' + data);
     let data_diff = (app.now().getTime() - app.data_getTime(data).getTime()) / 1000;
 
